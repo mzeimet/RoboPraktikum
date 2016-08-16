@@ -11,6 +11,8 @@ public class Main {
 	public static final String LICHT_PORT_RECHTS = "S4";
 
 	public static final String IR_PORT = "S3";
+	
+	public static final String US_PORT = "S2";
 
 	public static final Port LINKER_MOTOR_PORT = MotorPort.B;
 	public static final Port RECHTER_MOTOR_PORT = MotorPort.C;
@@ -22,9 +24,9 @@ public class Main {
 	}
 
 	private void run() {
-		Robot robot = new Robot(IR_PORT);
+		Robot robot = new Robot(US_PORT);
 		while (true) {
-			System.out.println(robot.checkHinderniss());
+			System.out.println(robot.getUltraschallAbstand());
 		}
 	}
 

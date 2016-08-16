@@ -1,11 +1,10 @@
 package project;
 
-import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.port.Port;
-import lejos.hardware.sensor.HiTechnicEOPD;
 import project.motors.Motor;
 import project.sensors.InfrarotSensor;
 import project.sensors.Lichtsensor;
+import project.sensors.UltaschallSensor;
 
 public class Robot {
 
@@ -14,8 +13,10 @@ public class Robot {
 
 	private InfrarotSensor infrarotSensor;
 
+	private UltaschallSensor ultraschallSensor;
+	
 	private Motor motor;
-
+	
 	public Robot(String lichtPortLinks, String lichtPortRechts, Port linkerMotorPort, Port rechterMotorPort) {
 		this.lichtSensorLinks = new Lichtsensor(lichtPortLinks);
 		this.lichtSensorRechts = new Lichtsensor(lichtPortRechts);
@@ -23,8 +24,12 @@ public class Robot {
 
 	}
 
-	public Robot(String irPortNummer) {
-		this.infrarotSensor = new InfrarotSensor(irPortNummer);
+//	public Robot(String irPortNummer) {
+//		this.infrarotSensor = new InfrarotSensor(irPortNummer);
+//	}
+	
+	public Robot(String usPortNummer){
+		this.ultraschallSensor = new UltaschallSensor(usPortNummer);
 	}
 
 	public boolean checkHinderniss() {
@@ -50,6 +55,9 @@ public class Robot {
 		motor.turnRight();
 	}
 
+	public float getUltraschallAbstand(){
+		return ultraschallSensor.getAbstandInCm();
+	}
 	private void SaveMove(Direction right) {
 		// Just save the Direction to send it later
 
