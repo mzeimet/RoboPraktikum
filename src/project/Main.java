@@ -3,7 +3,7 @@ package project;
 import lejos.hardware.port.MotorPort;
 import lejos.hardware.port.Port;
 import lejos.utility.Delay;
-import static project.LeftRight.*;
+import static project.Direction.*;
 
 public class Main {
 

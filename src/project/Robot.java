@@ -27,12 +27,32 @@ public class Robot {
 		this.infrarotSensor = new InfrarotSensor(irPortNummer);
 	}
 
-	public boolean checkHinderniss(){
+	public boolean checkHinderniss() {
 		return infrarotSensor.checktHinderniss();
 	}
 
 	public void steheStill() {
 		motor.setGeschwindigkeit(0);
+	}
+
+	public void DriveForward() {
+		SaveMove(Direction.FORWARD);
+		motor.fahreGerade();
+	}
+
+	private void turnLeft() {
+		SaveMove(Direction.LEFT);
+		motor.turnLeft();
+	}
+
+	private void turnRight() {
+		SaveMove(Direction.RIGHT);
+		motor.turnRight();
+	}
+
+	private void SaveMove(Direction right) {
+		// Just save the Direction to send it later
+
 	}
 
 	// /**

@@ -1,11 +1,9 @@
 package project.motors;
 
-import static project.LeftRight.LEFT;
-import static project.LeftRight.RIGHT;
-
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.hardware.port.Port;
-import project.LeftRight;
+import lejos.robotics.RegulatedMotor;
+import project.Direction;
 
 public class Motor {
 
@@ -20,13 +18,32 @@ public class Motor {
 	}
 
 	public void fahreGerade() {
-		motorLinks.forward();
-		motorRechts.forward();
+
+		motorLinks.synchronizeWith(new RegulatedMotor[] { motorRechts });
+		motorLinks.startSynchronization();
+
+		int i = 0;
+		while (i < 30) {
+			DriveSmooth(i);
+		}
+
+		motorLinks.endSynchronization();
+
+		motorLinks.waitComplete();
+		motorRechts.waitComplete();
+
 	}
 
-	private void setGeschwindigkeitSpezifisch(int percent, LeftRight lr) {
+	private void DriveSmooth(int i) {
+
+		motorLinks.rotate(i, true);
+		motorRechts.rotate(i, true);
+
+	}
+
+	private void setGeschwindigkeitSpezifisch(int percent, Direction lr) {
 		percent = validateOrCorrectPercent(percent);
-		if (lr.equals(LEFT)) {
+		if (lr.equals(Direction.LEFT)) {
 			motorLinks.setSpeed(percent * TOP_SPEED / 100);
 			motorLinks.forward();
 		} else {
@@ -36,8 +53,8 @@ public class Motor {
 	}
 
 	public void setGeschwindigkeit(int speedInPercent) {
-		setGeschwindigkeitSpezifisch(speedInPercent, LEFT);
-		setGeschwindigkeitSpezifisch(speedInPercent, RIGHT);
+		setGeschwindigkeitSpezifisch(speedInPercent, Direction.LEFT);
+		setGeschwindigkeitSpezifisch(speedInPercent, Direction.RIGHT);
 	}
 
 	private int validateOrCorrectPercent(int percent) {
@@ -48,6 +65,14 @@ public class Motor {
 			return 1;
 		}
 		return percent;
+	}
+
+	public void turnLeft() {
+		motorLinks.rotate(380);
+	}
+
+	public void turnRight() {
+		motorRechts.rotate(380);
 	}
 
 }
