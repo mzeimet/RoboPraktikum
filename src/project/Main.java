@@ -5,6 +5,7 @@ import lejos.hardware.port.Port;
 import lejos.utility.Delay;
 import static project.Direction.*;
 
+
 public class Main {
 
 	public static final String LICHT_PORT_LINKS = "S1";
@@ -24,10 +25,8 @@ public class Main {
 	}
 
 	private void run() {
-		Robot robot = new Robot(US_PORT);
-		while (true) {
-			System.out.println(robot.getUltraschallAbstand());
-		}
+		Robot robot = new Robot(RECHTER_MOTOR_PORT,LINKER_MOTOR_PORT);
+		
 	}
 
 	private boolean kleinerSchwellwert(int percentLeft, int percentRight) {
