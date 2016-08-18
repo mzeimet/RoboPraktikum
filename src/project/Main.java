@@ -2,6 +2,7 @@ package project;
 
 import java.util.LinkedList;
 
+import lejos.hardware.Sound;
 import lejos.hardware.port.MotorPort;
 import lejos.hardware.port.Port;
 
@@ -26,8 +27,11 @@ public class Main {
 	private void run() {
 		Robot robot = new Robot(RECHTER_MOTOR_PORT, LINKER_MOTOR_PORT);
 
+		// Marvin, hier kommt der Abgefahrene Wegfindungsalgorithmus hin
+
 		LinkedList<Integer> memory = robot.getBrain().start(robot.getMemory());
-		robot.doWhatLemmingsDo(memory);
+
+		Sound.beep();
 	}
 
 	private boolean kleinerSchwellwert(int percentLeft, int percentRight) {

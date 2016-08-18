@@ -12,31 +12,23 @@ public class CommunicationManager {
 
 	public LinkedList<Integer> start(LinkedList<Integer> memory) {
 
-		// use this as long as you don't want to test the Bluetooth connection
-		// return testData(memory);
-
-		// this is for the dumbRobo
-		try {
-			return waitForRoboConnection(memory);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return memory;
-		}
-
 		// this is for the intelligent Robo
-		// findRobo(memory); return null;
+		try {
+			// testData(memory);
+			findRobo(memory);
+		} catch (IOException e) {
+
+			e.printStackTrace();
+		}
+		return null;
 
 	}
 
 	private LinkedList<Integer> testData(LinkedList<Integer> memory) {
 
-		memory.addFirst(1);
-		memory.addFirst(2);
-		memory.addFirst(0);
-		memory.addFirst(0);
-		memory.addFirst(2);
-		memory.addFirst(1);
+		for (Integer integer : memory) {
+			System.out.println(integer);
+		}
 		return memory;
 	}
 
