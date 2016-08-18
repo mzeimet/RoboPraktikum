@@ -12,14 +12,8 @@ public class CommunicationManager {
 
 	public LinkedList<Integer> start(LinkedList<Integer> memory) {
 
-		// this is for the intelligent Robo
-		try {
-			// testData(memory);
-			findRobo(memory);
-		} catch (IOException e) {
-
-			e.printStackTrace();
-		}
+		testData(memory);
+		// findRobo(memory);
 		return null;
 
 	}
