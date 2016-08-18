@@ -2,8 +2,6 @@ package project;
 
 import lejos.hardware.port.MotorPort;
 import lejos.hardware.port.Port;
-import lejos.utility.Delay;
-import static project.Direction.*;
 
 public class Main {
 
@@ -16,6 +14,8 @@ public class Main {
 
 	public static final Port LINKER_MOTOR_PORT = MotorPort.B;
 	public static final Port RECHTER_MOTOR_PORT = MotorPort.C;
+	public static final Port MINI_MOTOR_PORT = MotorPort.A;
+
 	public static final int SCHWELLWERT_STOP = 80;
 	private static final int START_SPEED = 30;
 
@@ -24,10 +24,8 @@ public class Main {
 	}
 
 	private void run() {
-		Robot robot = new Robot(US_PORT);
-		while (true) {
-			System.out.println(robot.getUltraschallAbstand());
-		}
+		Robot robot = new Robot(US_PORT, IR_PORT, MINI_MOTOR_PORT, LINKER_MOTOR_PORT, RECHTER_MOTOR_PORT);
+		robot.findeWand();
 	}
 
 	private boolean kleinerSchwellwert(int percentLeft, int percentRight) {
