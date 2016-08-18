@@ -1,10 +1,9 @@
 package project;
 
+import java.util.LinkedList;
+
 import lejos.hardware.port.MotorPort;
 import lejos.hardware.port.Port;
-import lejos.utility.Delay;
-import static project.Direction.*;
-
 
 public class Main {
 
@@ -12,7 +11,7 @@ public class Main {
 	public static final String LICHT_PORT_RECHTS = "S4";
 
 	public static final String IR_PORT = "S3";
-	
+
 	public static final String US_PORT = "S2";
 
 	public static final Port LINKER_MOTOR_PORT = MotorPort.B;
@@ -25,8 +24,10 @@ public class Main {
 	}
 
 	private void run() {
-		Robot robot = new Robot(RECHTER_MOTOR_PORT,LINKER_MOTOR_PORT);
-		
+		Robot robot = new Robot(RECHTER_MOTOR_PORT, LINKER_MOTOR_PORT);
+
+		LinkedList<Integer> memory = robot.getBrain().start(robot.getMemory());
+		robot.doWhatLemmingsDo(memory);
 	}
 
 	private boolean kleinerSchwellwert(int percentLeft, int percentRight) {

@@ -1,82 +1,83 @@
 package project;
 
-import java.awt.Button;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.LinkedList;
 
-import lejos.hardware.Audio;
 import lejos.hardware.Bluetooth;
-import lejos.hardware.Brick;
-import lejos.hardware.BrickFinder;
-import lejos.hardware.lcd.LCD;
 import lejos.remote.nxt.NXTConnection;
 
 public class CommunicationManager {
 
-	public int[] start() {
-return testData();
-		//return searchRobo();
-		// findRobo(); return null;
+	public LinkedList<Integer> start(LinkedList<Integer> memory) {
 
-	}
+		// use this as long as you don't want to test the Bluetooth connection
+		// return testData(memory);
 
-	private int[] testData() {
-		
-		return new int[]{0,1,1,666,2};
-	}
-
-	private int[] searchRobo() {
-		LCD.drawString("Start", 0, 1);
-		int count = 0;
-		int memory[] = new int[5];
-
-		NXTConnection connection = Bluetooth.getNXTCommConnector().waitForConnection(100000, NXTConnection.PACKET);
-
-		LCD.clear();
-		LCD.drawString("waiting for BT", 5, 2);
-
-		DataInputStream dataIn = connection.openDataInputStream();
-		LCD.drawString("waiting for BT2", 15, 3);
+		// this is for the dumbRobo
 		try {
-			
-			while (count < 5) {
-				memory[count] = dataIn.readInt();
-				System.out.println(memory[count]);
-				count++;
-			}
-			dataIn.close();
-		} catch (IOException e1) {
+			return waitForRoboConnection(memory);
+		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			e.printStackTrace();
+			return memory;
 		}
+
+		// this is for the intelligent Robo
+		// findRobo(memory); return null;
+
+	}
+
+	private LinkedList<Integer> testData(LinkedList<Integer> memory) {
+
+		memory.addFirst(1);
+		memory.addFirst(2);
+		memory.addFirst(0);
+		memory.addFirst(0);
+		memory.addFirst(2);
+		memory.addFirst(1);
+		return memory;
+	}
+
+	private LinkedList<Integer> waitForRoboConnection(LinkedList<Integer> memory) throws IOException {
+		System.out.println("Start waiting for Connection");
+		NXTConnection connection = null;
+
+		while (connection == null)
+			connection = Bluetooth.getNXTCommConnector().waitForConnection(100000, NXTConnection.PACKET);
+		DataInputStream dataIn = connection.openDataInputStream();
+		System.out.println("Get Packages");
+
+		// Sender muss als letztes Packet die -1, für den Verbindungsabbruch
+		// Senden
+		while (memory.getFirst() != -1) {
+			memory.addFirst(dataIn.readInt());
+		}
+
+		dataIn.close();
+
 		return memory;
 
 	}
 
-	private void findRobo() {
-		LCD.drawString("A", 0, 1);
+	private void findRobo(LinkedList<Integer> memory) throws IOException {
+		System.out.println("Start Search other Robo");
 		NXTConnection connection = null;
+
 		while (connection == null)
 			connection = Bluetooth.getNXTCommConnector().connect("EV3", NXTConnection.PACKET);
-		LCD.drawString("AB", 0, 2);
+
+		System.out.println("Start send packages");
 
 		DataOutputStream dataOut = connection.openDataOutputStream();
-		try {
-			dataOut.writeInt(6666);
-			dataOut.writeInt(1);
-			dataOut.writeInt(1);
-			dataOut.writeInt(1);
-			dataOut.writeInt(0);
-			dataOut.flush();
 
-		} catch (IOException e) {
-			System.out.println(" write error " + e);
+		while (memory.getFirst() != null) {
+			dataOut.write(memory.getFirst());
+			memory.removeFirst();
 		}
-		LCD.drawString("ABC", 0, 3);
-	}
-
-	private void getData() {
+		dataOut.flush();
+		dataOut.close();
 
 	}
 

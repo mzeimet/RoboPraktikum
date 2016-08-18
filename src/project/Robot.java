@@ -1,8 +1,7 @@
 package project;
 
-import lejos.hardware.Sound;
-import lejos.hardware.lcd.LCD;
-import lejos.hardware.port.MotorPort;
+import java.util.LinkedList;
+
 import lejos.hardware.port.Port;
 import project.motors.Motor;
 import project.sensors.InfrarotSensor;
@@ -12,15 +11,12 @@ import project.sensors.UltaschallSensor;
 public class Robot {
 
 	private CommunicationManager Brain;
-	private int[] memory;
+	private LinkedList<Integer> memory = new LinkedList<Integer>();
+
 	private Lichtsensor lichtSensorLinks;
 	private Lichtsensor lichtSensorRechts;
-
 	private InfrarotSensor infrarotSensor;
-
 	private UltaschallSensor ultraschallSensor;
-	
-	
 
 	private Motor motor;
 
@@ -28,50 +24,37 @@ public class Robot {
 		// this.lichtSensorLinks = new Lichtsensor(lichtPortLinks);
 		// this.lichtSensorRechts = new Lichtsensor(lichtPortRechts);
 		this.motor = new project.motors.Motor(linkerMotorPort, rechterMotorPort);
-		motor.turnLeft();
 		Brain = new CommunicationManager();
-
-		memory = Brain.start();
-
-		LCD.clearDisplay();
-		LCD.drawString("sucess", 0, 5);
-		
-		System.out.println(memory.length);
-		if (memory == null){
-			Sound.beep();
-			System.out.println("shit");
-		}
-			
-		else
-			doWhatLemmingsDo();
-		
-		
+		// hier kommt Marvins verrückter Algorithmus hin
 
 	}
 
-	private void doWhatLemmingsDo() {
-		System.out.println("Richtig");
-		
-		for (int i = 0; i < memory.length; i++) {
-			System.out.println(memory[i]);
-			switch (memory[i]) {
+	/*
+	 * Folgt stupide den Schritten des vorherigen Robots
+	 */
+	public void doWhatLemmingsDo(LinkedList<Integer> memory) {
+		System.out.println(getMemory().size());
+
+		for (int i = 0; i < getMemory().size(); i++) {
+			System.out.println(getMemory().getFirst());
+			getMemory().removeFirst();
+			switch (getMemory().getFirst()) {
 			case 0:
 				System.out.println("Case: 0");
-				motor.turnLeft();
+				motor.fahreGerade();
 				break;
 			case 1:
 				System.out.println("Case: 1");
-				motor.turnRight();
+				motor.turnLeft();
 				break;
 
 			case 2:
 				System.out.println("Case: 2");
-				motor.fahreGerade();
+				motor.turnRight();
 				break;
 
 			default:
 				System.out.println("Case: else");
-				motor.fahreGerade();
 				break;
 			}
 		}
@@ -101,9 +84,38 @@ public class Robot {
 		motor.turnRight();
 	}
 
-	private void SaveMove(Direction right) {
-		// Just save the Direction to send it later
+	private void SaveMove(Direction dir) {
+		switch (dir) {
+		case FORWARD:
+			getMemory().addFirst(0);
+			break;
+		case LEFT:
+			getMemory().addFirst(1);
+			break;
+		case RIGHT:
+			getMemory().addFirst(2);
+			break;
 
+		default:
+			break;
+		}
+
+	}
+
+	public LinkedList<Integer> getMemory() {
+		return memory;
+	}
+
+	public void setMemory(LinkedList<Integer> memory) {
+		this.memory = memory;
+	}
+
+	public CommunicationManager getBrain() {
+		return Brain;
+	}
+
+	public void setBrain(CommunicationManager brain) {
+		Brain = brain;
 	}
 
 	// /**
