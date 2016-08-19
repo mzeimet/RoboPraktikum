@@ -53,7 +53,7 @@ public class Robot {
 
 	public void DriveForward() {
 		SaveMove(Direction.FORWARD);
-		motor.fahreGerade();
+//		motor.fahreGerade();
 	}
 
 	private void turnLeft() {
@@ -104,9 +104,11 @@ public class Robot {
 	private void fahreZuWand() {
 		System.out.println("fahre zu Wand");
 		motor.setGeschwindigkeit(30);
-		while(getUltraschallAbstand() > GRENZWERT_ABSTAND_WAND_FAHREN){
+		boolean nichtErreicht = getUltraschallAbstand() > GRENZWERT_ABSTAND_WAND_FAHREN;
+		while(nichtErreicht){
 			System.out.println(getUltraschallAbstand());
-			motor.fahreGerade();
+			motor.fahreGerade(1);
+			nichtErreicht = getUltraschallAbstand() > GRENZWERT_ABSTAND_WAND_FAHREN;
 		}
 	}
 
