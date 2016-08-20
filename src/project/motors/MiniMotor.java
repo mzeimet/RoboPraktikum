@@ -2,6 +2,9 @@ package project.motors;
 
 import lejos.hardware.motor.EV3MediumRegulatedMotor;
 import lejos.hardware.port.Port;
+import project.Direction;
+
+import static project.Direction.*;
 
 /**
  * Dreht entweder um 180 Grad nach Links oder Rechts, jedoch nur abwechselnd
@@ -10,42 +13,32 @@ public class MiniMotor {
 
 	private EV3MediumRegulatedMotor motor;
 
-	private boolean richtungLinks = true;
+	private Direction ausrichtung = FORWARD;
 
 	public MiniMotor(Port port) {
 		this.motor = new EV3MediumRegulatedMotor(port);
 	}
 
-	public void invertiere() {
-		if (richtungLinks) {
-			motor.rotate(-180);
-			richtungLinks = false;
-		} else {
-			motor.rotate(180);
-			richtungLinks = true;
-		}
-
+	public void drehe(Direction neueRichtung) {
+		this.ausrichtung = neueRichtung;
+		motor.rotate(berechneGradZuDrehen(ausrichtung, neueRichtung));
 	}
 
-	public boolean isRichtungLinks() {
-		return richtungLinks;
-	}
-
-	public void dreheLinks() {
-		if (richtungLinks) {
-			throw new IllegalArgumentException("Steht schon links!");
+	public int berechneGradZuDrehen(Direction aktuelleRichtung, Direction neueRichtung) {
+		int differenz = Math.abs(neueRichtung.ordinal() - aktuelleRichtung.ordinal());
+		if (aktuelleRichtung.ordinal() > neueRichtung.ordinal()) {
+			return -90 * differenz;
 		} else {
-			motor.rotate(-180);
-			richtungLinks = false;
+			return 90 * differenz;
 		}
 	}
 
-	public void dreheRechts() {
-		if (!richtungLinks) {
-			throw new IllegalArgumentException("Steht schon links!");
-		} else {
-			motor.rotate(180);
-			richtungLinks = true;
-		}
+	public Direction getAusrichtung() {
+		return ausrichtung;
 	}
+
+	public void setAusrichtung(Direction ausrichtung) {
+		this.ausrichtung = ausrichtung;
+	}
+
 }

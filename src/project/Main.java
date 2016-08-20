@@ -4,7 +4,7 @@ package project;
 
 import lejos.hardware.port.MotorPort;
 import lejos.hardware.port.Port;
-import project.motors.Motor;
+import project.Robot;
 
 public class Main {
 
