@@ -168,10 +168,10 @@ public class Robot {
 	// }
 	
 	public void linksdrehungAufDerStelle(){
-		motor.linksdrehungAufDerStelle(360);
+		motor.linksdrehungAufDerStelle(180);
 	}
 	
 	public void rechtsdrehungAufDerStelle() {
-		motor.rechtsdrehungAufDerStelle(360);
+		motor.rechtsdrehungAufDerStelle(90);
 	}
 }

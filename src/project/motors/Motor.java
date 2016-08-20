@@ -11,7 +11,7 @@ public class Motor {
 
 	private static final int TOP_SPEED = 740;
 	private static final double RADABSTAND = 12.2;
-	private static final double RADUMFANG = 17.6;
+	private final double RADDURCHMESSER = 6;
 	private static final double DREIHUNDERTSECHZIG_GRAD = 360;
 
 	private static final int GRAD_FUER_DREHUNG = 380;
@@ -84,14 +84,13 @@ public class Motor {
 	
 	/**
 	 * Berechnet wie oft sich das Rad drehen muss, damit der Roboter sich einmal um 360° dreht.
-	 * umdrehungen, sooft muss sich das Rad drehen, damit der Roboter sich einmal um 360° dreht.
 	 * 
-	 * @return umdrehungenInGrad, 
+	 * @return umdrehungen 
 	 */
 	public double berechneUmdrehungenProRunde() {
-			double umdrehungen = (Math.PI * RADABSTAND) / RADUMFANG;
-			double umdrehungenInGrad = DREIHUNDERTSECHZIG_GRAD * umdrehungen;
-			return umdrehungenInGrad;
+		double radumfang = RADDURCHMESSER * Math.PI;
+		double umdrehungen = (Math.PI * RADABSTAND) / radumfang;
+		return umdrehungen;
 	}
 	
 	/**
@@ -124,7 +123,6 @@ public class Motor {
 	 * @param grad, gibt an um wie viel Grad sich der Roboter drehen soll
 	 */
 	public void rechtsdrehungAufDerStelle(int grad) {
-		
 		double rechtsGrad = berechneUmdrehungenProRunde() * grad;
 		double linksGrad = -1 * rechtsGrad;
 		
@@ -140,6 +138,6 @@ public class Motor {
 		
 		motorRechts.endSynchronization();
 		motorRechts.waitComplete();
-		motorLinks.waitComplete();		
+		motorLinks.waitComplete();	
 	}
 }
