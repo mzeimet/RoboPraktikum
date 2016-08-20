@@ -21,7 +21,7 @@ public class Robot {
 
 	private static final int GRENZWERT_ABSTAND_WAND_SUCHEN = 50;
 	private static final String FEHLER_KEINE_WAND = "404 Wand nicht gefunden :(";
-	private static final float GRENZWERT_ABSTAND_WAND_FAHREN = 10;
+	private static final float GRENZWERT_ABSTAND_WAND_FAHREN = 12;
 
 	private boolean zielGefunden;
 	
@@ -31,12 +31,11 @@ public class Robot {
 		this.motor = new project.motors.Motor(linkerMotorPort, rechterMotorPort);
 	}
 
-	public Robot(String usPortNummer, String irPortNummer, Port miniMotorPort, Port linkerMotorPort,
-			Port rechterMotorPort) {
-		this.ultraschallSensor = new UltaschallSensor(usPortNummer);
+	public Robot(String usPort, String irPort, Port miniMotorPort, Port linkerMotorPort, Port rechterMotorPort) {
+		this.ultraschallSensor = new UltaschallSensor(usPort);
 		this.minimotor = new MiniMotor(miniMotorPort);
 		this.motor = new project.motors.Motor(linkerMotorPort, rechterMotorPort);
-		this.infrarotSensor = new InfrarotSensor(irPortNummer);
+		this.infrarotSensor = new InfrarotSensor(irPort);
 	}
 
 	public void rotate() {

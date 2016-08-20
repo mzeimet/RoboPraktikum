@@ -2,6 +2,7 @@ package project;
 
 import lejos.hardware.port.MotorPort;
 import lejos.hardware.port.Port;
+import project.Robot;
 
 public class Main {
 
@@ -25,7 +26,7 @@ public class Main {
 
 	private void run() {
 		Robot robot = new Robot(US_PORT, IR_PORT, MINI_MOTOR_PORT, LINKER_MOTOR_PORT, RECHTER_MOTOR_PORT);
-		robot.findeWand();
+		robot.findeWand();;
 	}
 
 	private boolean kleinerSchwellwert(int percentLeft, int percentRight) {
