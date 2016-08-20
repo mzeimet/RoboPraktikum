@@ -6,6 +6,7 @@ import project.motors.Motor;
 import project.sensors.InfrarotSensor;
 import project.sensors.Lichtsensor;
 import project.sensors.UltaschallSensor;
+import static project.Direction.*;
 
 public class Robot {
 
@@ -22,8 +23,9 @@ public class Robot {
 	private static final int GRENZWERT_ABSTAND_WAND_SUCHEN = 50;
 	private static final String FEHLER_KEINE_WAND = "404 Wand nicht gefunden :(";
 	private static final float GRENZWERT_ABSTAND_WAND_FAHREN = 12;
+	private static final float FELDLAENGE = 12;
 
-	private boolean zielGefunden;
+	private boolean zielGefunden = false;
 	
 	public Robot(String lichtPortLinks, String lichtPortRechts, Port linkerMotorPort, Port rechterMotorPort) {
 		this.lichtSensorLinks = new Lichtsensor(lichtPortLinks);
@@ -38,8 +40,8 @@ public class Robot {
 		this.infrarotSensor = new InfrarotSensor(irPort);
 	}
 
-	public void rotate() {
-		minimotor.invertiere();
+	public void dreheInfrarotSensor(Direction richtung) {
+		minimotor.drehe(richtung);
 	}
 
 	public boolean checkHinderniss() {
@@ -51,19 +53,15 @@ public class Robot {
 	}
 
 	public void DriveForward() {
-		SaveMove(Direction.FORWARD);
+		SaveMove(FORWARD);
 //		motor.fahreGerade();
 	}
 
-	private void turnLeft() {
-		SaveMove(Direction.LEFT);
-		motor.turnLeft();
+	private void drehe(Direction richtung){
+		SaveMove(richtung);
+		motor.drehe(richtung);
 	}
 
-	private void turnRight() {
-		SaveMove(Direction.RIGHT);
-		motor.turnRight();
-	}
 
 	public float getUltraschallAbstand() {
 		return ultraschallSensor.getAbstandInCm();
@@ -78,26 +76,37 @@ public class Robot {
 		try {
 			sucheRichtungWand();
 			fahreZuWand();
-			steheStill();
-			System.out.println(" Unn nu?");
-//			dreheZuWand();
-//			while(!zielGefunden){
-//				folgeWand();
-//			}
+			dreheZuWand();
+			while(!zielGefunden){
+				folgeWand();
+			}
 			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	
-	private void folgeWand() {
-		// TODO Auto-generated method stub
+	private void dreheZuWand() {
+		drehe(RIGHT);
 		
 	}
-
-	private void dreheZuWand() {
-		// TODO Auto-generated method stub
+	
+	/**
+	 * Folgt der linken Wand bis diese nicht mehr da ist oder er vor einem Hinderniss steht
+	 */
+	private void folgeWand() {
+		boolean linksKeineWand = false;
+		boolean stehtVorHinderniss = false;
 		
+		while(!linksKeineWand && !stehtVorHinderniss){
+			linksKeineWand = !checkeHindernisInfrarot(LEFT);
+//			stehtVorHinderniss = !
+		}
+		
+		
+	}
+	
+	private void fahreEinFeld(){
+		// eine Einheit nach vorne fahren, evtl mit Korrektur?!
 	}
 
 	private void fahreZuWand() {
@@ -109,6 +118,7 @@ public class Robot {
 			motor.fahreGerade(1);
 			nichtErreicht = getUltraschallAbstand() > GRENZWERT_ABSTAND_WAND_FAHREN;
 		}
+		steheStill();
 	}
 
 	/**
@@ -133,7 +143,16 @@ public class Robot {
 		}
 		throw new Exception(FEHLER_KEINE_WAND);
 	}
-
+	
+	public boolean checkeHindernisInfrarot(Direction richtung){
+		minimotor.drehe(richtung);
+		return infrarotSensor.checktHinderniss();
+	}
+	
+	public boolean checkeHindernisUltraschall(){
+		return ultraschallSensor.getAbstandInCm() < FELDLAENGE;
+	}
+	
 	// /**
 	// *
 	// * @return Helligkeit in Prozent, 0-100

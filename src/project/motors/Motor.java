@@ -5,9 +5,13 @@ import lejos.hardware.port.Port;
 import lejos.robotics.RegulatedMotor;
 import project.Direction;
 
+import static project.Direction.*;
+
 public class Motor {
 
 	private static final int TOP_SPEED = 740;
+
+	private static final int GRAD_FUER_DREHUNG = 380;
 
 	private EV3LargeRegulatedMotor motorLinks;
 	private EV3LargeRegulatedMotor motorRechts;
@@ -32,19 +36,16 @@ public class Motor {
 
 		motorLinks.waitComplete();
 		motorRechts.waitComplete();
-
 	}
 
 	private void DriveSmooth() {
-
 		motorLinks.rotate(90, true);
 		motorRechts.rotate(90, false);
-
 	}
 
 	private void setGeschwindigkeitSpezifisch(int percent, Direction lr) {
 		percent = validateOrCorrectPercent(percent);
-		if (lr.equals(Direction.LEFT)) {
+		if (lr.equals(LEFT)) {
 			motorLinks.setSpeed(percent * TOP_SPEED / 100);
 			motorLinks.forward();
 		} else {
@@ -54,8 +55,8 @@ public class Motor {
 	}
 
 	public void setGeschwindigkeit(int speedInPercent) {
-		setGeschwindigkeitSpezifisch(speedInPercent, Direction.LEFT);
-		setGeschwindigkeitSpezifisch(speedInPercent, Direction.RIGHT);
+		setGeschwindigkeitSpezifisch(speedInPercent, LEFT);
+		setGeschwindigkeitSpezifisch(speedInPercent, RIGHT);
 	}
 
 	private int validateOrCorrectPercent(int percent) {
@@ -68,12 +69,13 @@ public class Motor {
 		return percent;
 	}
 
-	public void turnLeft() {
-		motorLinks.rotate(380);
+	public void drehe(Direction richtung) {
+		if (richtung == LEFT) {
+			motorLinks.rotate(GRAD_FUER_DREHUNG);
+		} else {
+			if (richtung == RIGHT) {
+				motorRechts.rotate(GRAD_FUER_DREHUNG);
+			}
+		}
 	}
-
-	public void turnRight() {
-		motorRechts.rotate(380);
-	}
-
 }
