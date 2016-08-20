@@ -148,4 +148,12 @@ public class Robot {
 	// }
 	// return new Double(sample[0] * 100.0).intValue();
 	// }
+	
+	public void linksdrehungAufDerStelle(){
+		motor.linksdrehungAufDerStelle(360);
+	}
+	
+	public void rechtsdrehungAufDerStelle() {
+		motor.rechtsdrehungAufDerStelle(360);
+	}
 }
