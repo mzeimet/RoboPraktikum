@@ -22,7 +22,7 @@ public class Robot {
 
 	private static final int GRENZWERT_ABSTAND_WAND_SUCHEN = 50;
 	private static final String FEHLER_KEINE_WAND = "404 Wand nicht gefunden :(";
-	private static final float GRENZWERT_ABSTAND_WAND_FAHREN = 12;
+	private static final float GRENZWERT_ABSTAND_WAND_FAHREN = 5;
 	private static final float FELDLAENGE = 12;
 
 	private boolean zielGefunden = false;
@@ -75,7 +75,7 @@ public class Robot {
 		try {
 			sucheRichtungWand();
 			fahreZuWand();
-			dreheZuWand();
+ 			dreheZuWand();
 			while (!zielGefunden) {
 				folgeWand();
 				if (!checkeHindernisInfrarot(LEFT)) {
@@ -110,7 +110,7 @@ public class Robot {
 		boolean darfFahren = true;
 		while (darfFahren) {
 			linksKeineWand = !checkeHindernisInfrarot(LEFT);
-			stehtVorHinderniss = !checkeHindernisUltraschall();
+			stehtVorHinderniss = checkeHindernisUltraschall();
 			if (stehtVorHinderniss) {
 				stehtVorHinderniss = pruefeUltraschallMitInfrarot();
 			}
@@ -127,12 +127,15 @@ public class Robot {
 	 * @return
 	 */
 	private boolean pruefeUltraschallMitInfrarot() {
-		return false;
+		return checkeHindernisInfrarot(FORWARD);
 	}
 
 	// TODO
 	private void fahreEinFeld() {
 		// eine Einheit nach vorne fahren, evtl mit Korrektur?!
+		motor.setGeschwindigkeit(30);
+		motor.fahreGerade(1);
+		steheStill();
 	}
 
 	private void fahreZuWand() {
@@ -176,7 +179,8 @@ public class Robot {
 	}
 
 	public boolean checkeHindernisUltraschall() {
-		return ultraschallSensor.getAbstandInCm() < FELDLAENGE;
+		float abstand = ultraschallSensor.getAbstandInCm();
+		return  abstand < GRENZWERT_ABSTAND_WAND_FAHREN;
 	}
 
 	// /**
@@ -193,11 +197,8 @@ public class Robot {
 	// return new Double(sample[0] * 100.0).intValue();
 	// }
 	
-	public void linksdrehungAufDerStelle(){
-		motor.linksdrehungAufDerStelle(180);
-	}
-	
-	public void rechtsdrehungAufDerStelle() {
-		motor.rechtsdrehungAufDerStelle(90);
+	public void drehenAufDerStelle(){
+		
+		motor.drehenAufDerStelle(-90);
 	}
 }

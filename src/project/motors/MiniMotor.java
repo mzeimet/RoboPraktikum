@@ -20,16 +20,17 @@ public class MiniMotor {
 	}
 
 	public void drehe(Direction neueRichtung) {
-		this.ausrichtung = neueRichtung;
 		motor.rotate(berechneGradZuDrehen(ausrichtung, neueRichtung));
+		this.ausrichtung = neueRichtung;
 	}
 
 	public int berechneGradZuDrehen(Direction aktuelleRichtung, Direction neueRichtung) {
 		int differenz = Math.abs(neueRichtung.ordinal() - aktuelleRichtung.ordinal());
+		if(differenz > 2) System.exit(5);
 		if (aktuelleRichtung.ordinal() > neueRichtung.ordinal()) {
-			return -90 * differenz;
-		} else {
 			return 90 * differenz;
+		} else {
+			return -90 * differenz;
 		}
 	}
 

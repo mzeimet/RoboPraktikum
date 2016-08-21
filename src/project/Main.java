@@ -28,10 +28,15 @@ public class Main {
 
 	private void run() {
 		Robot robot = new Robot(US_PORT, IR_PORT, MINI_MOTOR_PORT, LINKER_MOTOR_PORT, RECHTER_MOTOR_PORT);
-		//robot.findeWand();
-		robot.linksdrehungAufDerStelle();
-		//robot.rechtsdrehungAufDerStelle();
-		//robot.checkeHindernisInfrarot(Direction.LEFT);
+		
+//		while(true){
+//			robot.drehenAufDerStelle();
+//		}
+		
+		robot.findeWand();
+//		while(true){
+//			robot.checkeHindernisInfrarot(Direction.LEFT);
+//		}
 	}
 
 	private boolean kleinerSchwellwert(int percentLeft, int percentRight) {

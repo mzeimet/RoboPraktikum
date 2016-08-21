@@ -3,12 +3,13 @@ package project.sensors;
 import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.port.Port;
 import lejos.hardware.sensor.HiTechnicEOPD;
+import lejos.robotics.objectdetection.FeatureListener;
 
 public class InfrarotSensor {
 	
 	private HiTechnicEOPD sensor;
 	
-	private static final float SCHWELLWERT = 98;
+	private static final float SCHWELLWERT = 99.5f;
 
 	public InfrarotSensor(String irPortNummer) {
 		Port port = LocalEV3.get().getPort(irPortNummer);
@@ -23,6 +24,7 @@ public class InfrarotSensor {
 	}
 	
 	public boolean checktHinderniss(){
+		float wert = getWert();
 		return getWert() < SCHWELLWERT;
 	}
 	

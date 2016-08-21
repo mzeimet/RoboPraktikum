@@ -11,8 +11,8 @@ public class Motor {
 
 	private static final int TOP_SPEED = 740;
 	private static final double RADABSTAND = 12.2;
-	private final double RADDURCHMESSER = 6;
-	private static final double DREIHUNDERTSECHZIG_GRAD = 360;
+	private static final double RADDURCHMESSER = 6;
+	private static final double BODENFAKTOR = 1; // je schlechter der Boden, desto hoeher der Faktor
 
 	private static final int GRAD_FUER_DREHUNG = 380;
 
@@ -74,70 +74,70 @@ public class Motor {
 
 	public void drehe(Direction richtung) {
 		if (richtung == LEFT) {
-			motorLinks.rotate(GRAD_FUER_DREHUNG);
+			drehenAufDerStelle(-90);
 		} else {
 			if (richtung == RIGHT) {
-				motorRechts.rotate(GRAD_FUER_DREHUNG);
+				drehenAufDerStelle(90);
 			}
 		}
 	}
-	
+
 	/**
-	 * Berechnet wie oft sich das Rad drehen muss, damit der Roboter sich einmal um 360° dreht.
+	 * Berechnet wie oft sich das Rad drehen muss, damit der Roboter sich einmal
+	 * um 360° dreht.
 	 * 
-	 * @return umdrehungen 
+	 * @return umdrehungen
 	 */
 	public double berechneUmdrehungenProRunde() {
 		double radumfang = RADDURCHMESSER * Math.PI;
 		double umdrehungen = (Math.PI * RADABSTAND) / radumfang;
 		return umdrehungen;
 	}
-	
+
 	/**
-	 * Dreht sich um die eingegebene Gradzahl nach links auf der Stelle
+	 * Dreht sich um die eingegebene Gradzahl auf der Stelle. Negative Gradzahl
+	 * => Linksdrehung, Positive Gradzahl => Rechtsdrehung
 	 * 
-	 * @param grad, gibt an um wie viel Grad sich der Roboter drehen soll
+	 * @param grad,
+	 *            gibt an um wie viel Grad sich der Roboter drehen soll
 	 */
-	public void linksdrehungAufDerStelle(int grad) {
-		double linksGrad = berechneUmdrehungenProRunde() * grad;
-		double rechtsGrad = -1 * linksGrad;
+	public void drehenAufDerStelle(int grad) {
 		
+		double linksVorher = motorLinks.getTachoCount();
+		double rechtsVorher = motorRechts.getTachoCount();
+		
+		double linksGrad = 0;
+		double rechtsGrad = 0;
+		if (grad == 0)
+			return;
+		
+		rechtsGrad = berechneUmdrehungenProRunde() * grad * BODENFAKTOR;
+		linksGrad = -1 * rechtsGrad;
+
 		motorLinks.synchronizeWith(new RegulatedMotor[] { motorRechts });
 		motorLinks.startSynchronization();
 
-		
-		motorLinks.setSpeed(70);
-		motorLinks.rotate((int) linksGrad,true);
-		
-		motorRechts.setSpeed(70);
-		motorRechts.rotate((int) rechtsGrad, true);
-		
-		motorLinks.endSynchronization();
-		motorLinks.waitComplete();
-		motorRechts.waitComplete();		
-	}
-	
-	/**
-	 * Dreht sich um die eingegebene Gradzahl nach rechts auf der Stelle
-	 * 
-	 * @param grad, gibt an um wie viel Grad sich der Roboter drehen soll
-	 */
-	public void rechtsdrehungAufDerStelle(int grad) {
-		double rechtsGrad = berechneUmdrehungenProRunde() * grad;
-		double linksGrad = -1 * rechtsGrad;
-		
-		motorRechts.synchronizeWith(new RegulatedMotor[] { motorLinks });
-		motorRechts.startSynchronization();
-
-		
-		motorRechts.setSpeed(70);
-		motorRechts.rotate((int) rechtsGrad,true);
-		
 		motorLinks.setSpeed(70);
 		motorLinks.rotate((int) linksGrad, true);
-		
-		motorRechts.endSynchronization();
+
+		motorRechts.setSpeed(70);
+		motorRechts.rotate((int) rechtsGrad, true);
+
+		motorLinks.endSynchronization();
+		motorLinks.waitComplete();
 		motorRechts.waitComplete();
-		motorLinks.waitComplete();	
+		
+		try {
+			Thread.sleep(2000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		double linksNachher = motorLinks.getTachoCount();
+		double rechtsNachher = motorRechts.getTachoCount();
+		double differenzLinks = linksVorher - linksNachher;
+		double differenzRechts = rechtsVorher -rechtsNachher;
+		System.out.println("Links: " + differenzLinks + ", Rechts: " + differenzRechts);
 	}
 }
