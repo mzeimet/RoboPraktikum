@@ -43,17 +43,15 @@ public class Motor {
 
 	private void DriveSmooth() {
 		motorLinks.rotate(90, true);
-		motorRechts.rotate(90, false);
+		motorRechts.rotate(90, true);
 	}
 
 	private void setGeschwindigkeitSpezifisch(int percent, Direction lr) {
 		percent = validateOrCorrectPercent(percent);
 		if (lr.equals(LEFT)) {
 			motorLinks.setSpeed(percent * TOP_SPEED / 100);
-			motorLinks.forward();
 		} else {
 			motorRechts.setSpeed(percent * TOP_SPEED / 100);
-			motorRechts.forward();
 		}
 	}
 
@@ -121,18 +119,11 @@ public class Motor {
 		motorLinks.rotate((int) linksGrad, true);
 
 		motorRechts.setSpeed(70);
-		motorRechts.rotate((int) rechtsGrad, true);
+		motorRechts.rotate((int) rechtsGrad, false);
 
 		motorLinks.endSynchronization();
 		motorLinks.waitComplete();
 		motorRechts.waitComplete();
-		
-		try {
-			Thread.sleep(2000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		
 		double linksNachher = motorLinks.getTachoCount();
 		double rechtsNachher = motorRechts.getTachoCount();
