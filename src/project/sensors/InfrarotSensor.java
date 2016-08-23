@@ -28,6 +28,7 @@ public class InfrarotSensor {
 		return getWert() < SCHWELLWERT;
 	}
 	
+	// NOtiz: bei 7cm sprung wegen <2.2, bei >12 cm nicht mehr sehr zuverlässig
 	public float messeAbstand(){
 		float wert = 100f -getWert();
 		if(wert > 5.2){
@@ -40,13 +41,13 @@ public class InfrarotSensor {
 			return 15 - wert/0.3f;
 		} else	{
 			if(wert > 3.8){
-				return 4;
+				return 5 - (wert - 3.8f)/1.4f;
 			}
 			if(wert >2.8){
-				return 5;
+				return 6 - (wert - 2.8f);
 			}
 			else{
-				return 6;
+				return 7 - (wert -2.2f)/0.6f;
 			}
 		}
 	}

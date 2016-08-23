@@ -70,6 +70,10 @@ public class Robot {
 		// Just save the Direction to send it later
 
 	}
+	
+	public void drehe(int grad){
+		motor.drehenAufDerStelle(grad);
+	}
 
 	public void findeWand() {
 		try {
