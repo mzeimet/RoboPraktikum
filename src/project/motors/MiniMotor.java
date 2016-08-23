@@ -15,6 +15,10 @@ public class MiniMotor {
 
 	private Direction ausrichtung = FORWARD;
 
+	private static final int MAX_GRADZAHL = 100;
+	
+	private int gradzahl;
+	
 	public MiniMotor(Port port) {
 		this.motor = new EV3MediumRegulatedMotor(port);
 	}
@@ -22,6 +26,29 @@ public class MiniMotor {
 	public void drehe(Direction neueRichtung) {
 		motor.rotate(berechneGradZuDrehen(ausrichtung, neueRichtung));
 		this.ausrichtung = neueRichtung;
+	}
+	
+	/**
+	 * Dreht den Motor um die angegebene gradzahl relativ zur Mitte.
+	 * negativ für nach links, positiv für rechts. 
+	 * kleiner 
+	 * @param grad
+	 */
+	public void drehe(int grad){
+		grad *=-1;
+		if(Math.abs(grad) > MAX_GRADZAHL){
+			throw new IllegalArgumentException();
+		}
+		motor.rotate(grad - gradzahl);
+		gradzahl = grad;
+	}
+	
+	/**
+	 * dreht den motor wieder in die mitte zurück
+	 */
+	public void dreheZurueck(){
+		motor.rotate(- gradzahl);
+		gradzahl = 0;
 	}
 
 	public int berechneGradZuDrehen(Direction aktuelleRichtung, Direction neueRichtung) {
@@ -42,4 +69,8 @@ public class MiniMotor {
 		this.ausrichtung = ausrichtung;
 	}
 
+	public static int getMaxGradzahl(){
+		return MAX_GRADZAHL;
+	}
+	
 }

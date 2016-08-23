@@ -24,6 +24,10 @@ public class Robot {
 	private static final String FEHLER_KEINE_WAND = "404 Wand nicht gefunden :(";
 	private static final float GRENZWERT_ABSTAND_WAND_FAHREN = 5;
 	private static final float FELDLAENGE = 12;
+	private static final float GRENZWERT_ABWEICHUNG_IR = 1f;
+	private static final int INTERVALL_GROESSE_IR_MESSUNG = 10;
+
+	private float letzterAbstand;
 
 	private boolean zielGefunden = false;
 
@@ -52,11 +56,6 @@ public class Robot {
 		motor.setGeschwindigkeit(0);
 	}
 
-	public void DriveForward() {
-		SaveMove(FORWARD);
-		// motor.fahreGerade();
-	}
-
 	private void drehe(Direction richtung) {
 		SaveMove(richtung);
 		motor.drehe(richtung);
@@ -70,27 +69,28 @@ public class Robot {
 		// Just save the Direction to send it later
 
 	}
-	
-	public void drehe(int grad){
+
+	public void drehe(int grad) {
 		motor.drehenAufDerStelle(grad);
 	}
 
 	public void findeWand() {
 		try {
-			sucheRichtungWand();
+			// sucheRichtungWand();
 			fahreZuWand();
- 			dreheZuWand();
+			dreheZuWand();
+			letzterAbstand = infrarotSensor.messeAbstand();
 			while (!zielGefunden) {
 				folgeWand();
 				if (!checkeHindernisInfrarot(LEFT)) {
 					// links frei
 					drehe(LEFT);
-				} else { //links hinderniss
-					if(checkeHindernisInfrarot(RIGHT)){
-						//sackgasse
+				} else { // links hinderniss
+					if (checkeHindernisInfrarot(RIGHT)) {
+						// sackgasse
 						drehe(RIGHT);
 						drehe(RIGHT);
-					} else { 
+					} else {
 						drehe(Direction.RIGHT);
 					}
 				}
@@ -136,10 +136,46 @@ public class Robot {
 
 	// TODO
 	private void fahreEinFeld() {
-		// eine Einheit nach vorne fahren, evtl mit Korrektur?!
+		float aktuellerAbstand = messeAbstand();
+		if (Math.abs(aktuellerAbstand - letzterAbstand) > GRENZWERT_ABWEICHUNG_IR) {
+			korregiereAbstand(aktuellerAbstand);
+		}
 		motor.setGeschwindigkeit(30);
 		motor.fahreGerade(1);
 		steheStill();
+	}
+	
+	/**
+	 * Misst den Abstand des IR-Sensors zum nächstmöglichen Objekt
+	 * @return
+	 */
+	public float messeAbstand() {
+		float min = Float.MAX_VALUE;
+		for(int i = - minimotor.getMaxGradzahl(); i <= minimotor.getMaxGradzahl(); i+= INTERVALL_GROESSE_IR_MESSUNG){
+			minimotor.drehe(i);
+//			minimotor.dreheZurueck();
+			float abstand = infrarotSensor.messeAbstand();
+			if(abstand < min){
+				min = abstand;
+			}
+		}
+		minimotor.dreheZurueck();
+		return min;
+	}
+	
+	/**
+	 * berechnet den Winkel in dem der Roboter relativ zum ausgangswinkel zur
+	 * wand steht, abhägig vom ursprünglichen Abstand und Winkel
+	 * @param aktuellerAbstand
+	 * @return
+	 */
+	private float berechneWinkel(float aktuellerAbstand) {
+		return 0;
+	}
+	
+	private void korregiereAbstand(float aktuellerAbstand) {
+		float winkel = berechneWinkel(aktuellerAbstand);
+		// TODO Steven
 	}
 
 	private void fahreZuWand() {
@@ -184,7 +220,7 @@ public class Robot {
 
 	public boolean checkeHindernisUltraschall() {
 		float abstand = ultraschallSensor.getAbstandInCm();
-		return  abstand < GRENZWERT_ABSTAND_WAND_FAHREN;
+		return abstand < GRENZWERT_ABSTAND_WAND_FAHREN;
 	}
 
 	// /**
@@ -200,9 +236,9 @@ public class Robot {
 	// }
 	// return new Double(sample[0] * 100.0).intValue();
 	// }
-	
-	public void drehenAufDerStelle(){
-		
+
+	public void drehenAufDerStelle() {
+
 		motor.drehenAufDerStelle(-90);
 	}
 

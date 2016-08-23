@@ -32,8 +32,9 @@ public class Main {
 		
 //		robot.findeWand();
 		while(true){
-			robot.checkeHindernisInfrarot(Direction.RIGHT);
-			System.out.println(robot.messeInfrarot());
+//			robot.checkeHindernisInfrarot(Direction.RIGHT);
+//			System.out.println(robot.messeInfrarot());
+			System.out.println(robot.messeAbstand());
 		}
 	}
 
