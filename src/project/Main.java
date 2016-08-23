@@ -33,10 +33,11 @@ public class Main {
 //			robot.drehenAufDerStelle();
 //		}
 		
-		robot.findeWand();
-//		while(true){
+//		robot.findeWand();
+		while(true){
 //			robot.checkeHindernisInfrarot(Direction.LEFT);
-//		}
+			System.out.println(robot.messeInfrarot());
+		}
 	}
 
 	private boolean kleinerSchwellwert(int percentLeft, int percentRight) {

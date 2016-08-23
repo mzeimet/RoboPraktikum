@@ -28,4 +28,26 @@ public class InfrarotSensor {
 		return getWert() < SCHWELLWERT;
 	}
 	
+	public float messeAbstand(){
+		float wert = 100f -getWert();
+		if(wert > 5.2){
+			return 0; // zu nah
+		}
+		if(wert  < 0.2 ){
+			return 15; // zu weit
+		}
+		if(wert <2.2){
+			return 15 - wert/0.3f;
+		} else	{
+			if(wert > 3.8){
+				return 4;
+			}
+			if(wert >2.8){
+				return 5;
+			}
+			else{
+				return 6;
+			}
+		}
+	}
 }

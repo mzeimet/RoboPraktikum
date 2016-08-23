@@ -104,7 +104,7 @@ public class Robot {
 	 * Folgt der linken Wand bis diese nicht mehr da ist oder er vor einem
 	 * Hinderniss steht
 	 */
-	private void folgeWand() {
+	public void folgeWand() {
 		boolean linksKeineWand = false;
 		boolean stehtVorHinderniss = false;
 		boolean darfFahren = true;
@@ -200,5 +200,9 @@ public class Robot {
 	public void drehenAufDerStelle(){
 		
 		motor.drehenAufDerStelle(-90);
+	}
+
+	public float messeInfrarot() {
+		return infrarotSensor.messeAbstand();
 	}
 }
