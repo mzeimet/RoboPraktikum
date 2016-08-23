@@ -25,7 +25,9 @@ public class Robot {
 	private static final float GRENZWERT_ABSTAND_WAND_FAHREN = 5;
 	private static final float FELDLAENGE = 12;
 	private static final float GRENZWERT_ABWEICHUNG_IR = 1f;
-	private static final int INTERVALL_GROESSE_IR_MESSUNG = 10;
+	private static final int INTERVALL_GROESSE_IR_MESSUNG = 20;
+	
+	private static final float FAHRE_GERADE_DISTANZ = 5f;
 
 	private float letzterAbstand;
 
@@ -79,7 +81,7 @@ public class Robot {
 			// sucheRichtungWand();
 			fahreZuWand();
 			dreheZuWand();
-			letzterAbstand = infrarotSensor.messeAbstand();
+			letzterAbstand = messeAbstand();
 			while (!zielGefunden) {
 				folgeWand();
 				if (!checkeHindernisInfrarot(LEFT)) {
@@ -134,8 +136,7 @@ public class Robot {
 		return checkeHindernisInfrarot(FORWARD);
 	}
 
-	// TODO
-	private void fahreEinFeld() {
+	public void fahreEinFeld() {
 		float aktuellerAbstand = messeAbstand();
 		if (Math.abs(aktuellerAbstand - letzterAbstand) > GRENZWERT_ABWEICHUNG_IR) {
 			korregiereAbstand(aktuellerAbstand);
@@ -153,7 +154,6 @@ public class Robot {
 		float min = Float.MAX_VALUE;
 		for(int i = - minimotor.getMaxGradzahl(); i <= minimotor.getMaxGradzahl(); i+= INTERVALL_GROESSE_IR_MESSUNG){
 			minimotor.drehe(i);
-//			minimotor.dreheZurueck();
 			float abstand = infrarotSensor.messeAbstand();
 			if(abstand < min){
 				min = abstand;
@@ -170,7 +170,9 @@ public class Robot {
 	 * @return
 	 */
 	private float berechneWinkel(float aktuellerAbstand) {
-		return 0;
+		float differenz = letzterAbstand - aktuellerAbstand;
+		float hypothenuse = FAHRE_GERADE_DISTANZ;
+		return (float) Math.toDegrees(Math.asin(differenz/hypothenuse));
 	}
 	
 	private void korregiereAbstand(float aktuellerAbstand) {
@@ -223,19 +225,7 @@ public class Robot {
 		return abstand < GRENZWERT_ABSTAND_WAND_FAHREN;
 	}
 
-	// /**
-	// *
-	// * @return Helligkeit in Prozent, 0-100
-	// */
-	// public int getLichtInProzent(LeftRight lr) {
-	// float sample[] = new float[1];
-	// if (lr.equals(LEFT)) {
-	// lichtSensorLinks.getWert();
-	// } else {
-	// lichtSensorRechts.getWert();
-	// }
-	// return new Double(sample[0] * 100.0).intValue();
-	// }
+	
 
 	public void drehenAufDerStelle() {
 
@@ -245,4 +235,18 @@ public class Robot {
 	public float messeInfrarot() {
 		return infrarotSensor.messeAbstand();
 	}
+	
+	// /**
+		// *
+		// * @return Helligkeit in Prozent, 0-100
+		// */
+		// public int getLichtInProzent(LeftRight lr) {
+		// float sample[] = new float[1];
+		// if (lr.equals(LEFT)) {
+		// lichtSensorLinks.getWert();
+		// } else {
+		// lichtSensorRechts.getWert();
+		// }
+		// return new Double(sample[0] * 100.0).intValue();
+		// }
 }
