@@ -103,7 +103,20 @@ public class Robot {
 	}
 
 	private void dreheZuWand() {
-		drehe(RIGHT);
+		int gradBeiMin = 0;
+		minimotor.dreheZurueck();
+		float min = Float.MAX_VALUE;
+		for(int aktGradZahl = - minimotor.getMaxGradzahl(); aktGradZahl <= minimotor.getMaxGradzahl(); aktGradZahl+= INTERVALL_GROESSE_IR_MESSUNG/2){
+			minimotor.drehe(aktGradZahl);
+			float abstand = infrarotSensor.messeAbstand();
+			if(abstand < min){
+				min = abstand;
+				gradBeiMin = aktGradZahl;
+			}
+		}
+		minimotor.dreheZurueck();
+		motor.drehenAufDerStelle(gradBeiMin);
+		motor.drehe(RIGHT);
 	}
 
 	/**
@@ -152,8 +165,8 @@ public class Robot {
 	 */
 	public float messeAbstand() {
 		float min = Float.MAX_VALUE;
-		for(int i = - minimotor.getMaxGradzahl(); i <= minimotor.getMaxGradzahl(); i+= INTERVALL_GROESSE_IR_MESSUNG){
-			minimotor.drehe(i);
+		for(int aktGradZahl = - minimotor.getMaxGradzahl(); aktGradZahl <= minimotor.getMaxGradzahl(); aktGradZahl+= INTERVALL_GROESSE_IR_MESSUNG){
+			minimotor.drehe(aktGradZahl);
 			float abstand = infrarotSensor.messeAbstand();
 			if(abstand < min){
 				min = abstand;
@@ -181,7 +194,6 @@ public class Robot {
 	}
 
 	private void fahreZuWand() {
-		System.out.println("fahre zu Wand");
 		motor.setGeschwindigkeit(30);
 		boolean nichtErreicht = getUltraschallAbstand() > GRENZWERT_ABSTAND_WAND_FAHREN;
 		while (nichtErreicht) {
@@ -217,7 +229,9 @@ public class Robot {
 
 	public boolean checkeHindernisInfrarot(Direction richtung) {
 		minimotor.drehe(richtung);
-		return infrarotSensor.checktHinderniss();
+		boolean hasHindernis = infrarotSensor.checktHinderniss();
+		minimotor.drehe(FORWARD);
+		return hasHindernis;
 	}
 
 	public boolean checkeHindernisUltraschall() {
