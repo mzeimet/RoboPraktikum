@@ -1,12 +1,15 @@
 package project;
 
+import static project.Direction.FORWARD;
+import static project.Direction.LEFT;
+import static project.Direction.RIGHT;
+
 import lejos.hardware.port.Port;
 import project.motors.MiniMotor;
 import project.motors.Motor;
 import project.sensors.InfrarotSensor;
 import project.sensors.Lichtsensor;
 import project.sensors.UltaschallSensor;
-import static project.Direction.*;
 
 public class Robot {
 
@@ -26,8 +29,10 @@ public class Robot {
 	private static final float FELDLAENGE = 12;
 	private static final float GRENZWERT_ABWEICHUNG_IR = 1f;
 	private static final int INTERVALL_GROESSE_IR_MESSUNG = 20;
-	
+
 	private static final float FAHRE_GERADE_DISTANZ = 5f;
+	private static final int MAGISCHE_TOLERANZ_KONSTANTE = 1;
+	private static final float KONSTANTE_RAD_UMFANG = 0;
 
 	private float letzterAbstand;
 
@@ -83,7 +88,7 @@ public class Robot {
 			dreheZuWand();
 			letzterAbstand = messeAbstand();
 			while (!zielGefunden) {
-				folgeWand();
+				folgeWand(letzterAbstand);
 				if (!checkeHindernisInfrarot(LEFT)) {
 					// links frei
 					drehe(LEFT);
@@ -106,10 +111,11 @@ public class Robot {
 		int gradBeiMin = 0;
 		minimotor.dreheZurueck();
 		float min = Float.MAX_VALUE;
-		for(int aktGradZahl = - minimotor.getMaxGradzahl(); aktGradZahl <= minimotor.getMaxGradzahl(); aktGradZahl+= INTERVALL_GROESSE_IR_MESSUNG/2){
+		for (int aktGradZahl = -minimotor.getMaxGradzahl(); aktGradZahl <= minimotor
+				.getMaxGradzahl(); aktGradZahl += INTERVALL_GROESSE_IR_MESSUNG / 2) {
 			minimotor.drehe(aktGradZahl);
 			float abstand = infrarotSensor.messeAbstand();
-			if(abstand < min){
+			if (abstand < min) {
 				min = abstand;
 				gradBeiMin = aktGradZahl;
 			}
@@ -123,7 +129,7 @@ public class Robot {
 	 * Folgt der linken Wand bis diese nicht mehr da ist oder er vor einem
 	 * Hinderniss steht
 	 */
-	public void folgeWand() {
+	public void folgeWand(float vergleichsAbstand) {
 		boolean linksKeineWand = false;
 		boolean stehtVorHinderniss = false;
 		boolean darfFahren = true;
@@ -135,9 +141,17 @@ public class Robot {
 			}
 			darfFahren = !linksKeineWand && !stehtVorHinderniss;
 			if (darfFahren) {
-				fahreEinFeld();
+				fahreEinFeld(vergleichsAbstand);
 			}
+
 		}
+	}
+
+	private boolean abstandVeraendert(float vergleichsAbstand) {
+		float jetztAbstand = messeAbstand();
+
+		return vergleichsAbstand > jetztAbstand + MAGISCHE_TOLERANZ_KONSTANTE
+				|| vergleichsAbstand < jetztAbstand - MAGISCHE_TOLERANZ_KONSTANTE;
 	}
 
 	/**
@@ -149,47 +163,65 @@ public class Robot {
 		return checkeHindernisInfrarot(FORWARD);
 	}
 
-	public void fahreEinFeld() {
-		float aktuellerAbstand = messeAbstand();
-		if (Math.abs(aktuellerAbstand - letzterAbstand) > GRENZWERT_ABWEICHUNG_IR) {
-			korregiereAbstand(aktuellerAbstand);
-		}
+	public void fahreEinFeld(float vergleichsAbstand) {
+		if (abstandVeraendert(vergleichsAbstand))
+			korregiereAbstand(vergleichsAbstand);
+
 		motor.setGeschwindigkeit(30);
 		motor.fahreGerade(1);
 		steheStill();
 	}
-	
+
 	/**
 	 * Misst den Abstand des IR-Sensors zum nächstmöglichen Objekt
+	 * 
 	 * @return
 	 */
 	public float messeAbstand() {
 		float min = Float.MAX_VALUE;
-		for(int aktGradZahl = - minimotor.getMaxGradzahl(); aktGradZahl <= minimotor.getMaxGradzahl(); aktGradZahl+= INTERVALL_GROESSE_IR_MESSUNG){
+		for (int aktGradZahl = -minimotor.getMaxGradzahl(); aktGradZahl <= minimotor
+				.getMaxGradzahl(); aktGradZahl += INTERVALL_GROESSE_IR_MESSUNG) {
 			minimotor.drehe(aktGradZahl);
 			float abstand = infrarotSensor.messeAbstand();
-			if(abstand < min){
+			if (abstand < min) {
 				min = abstand;
 			}
 		}
 		minimotor.dreheZurueck();
 		return min;
 	}
-	
+
 	/**
 	 * berechnet den Winkel in dem der Roboter relativ zum ausgangswinkel zur
 	 * wand steht, abhägig vom ursprünglichen Abstand und Winkel
+	 * 
 	 * @param aktuellerAbstand
 	 * @return
 	 */
-	private float berechneWinkel(float aktuellerAbstand) {
-		float differenz = letzterAbstand - aktuellerAbstand;
+	private float berechneWinkel(float differenz) {
 		float hypothenuse = FAHRE_GERADE_DISTANZ;
-		return (float) Math.toDegrees(Math.asin(differenz/hypothenuse));
+		return (float) Math.toDegrees(Math.asin(differenz / hypothenuse));
 	}
-	
+
 	private void korregiereAbstand(float aktuellerAbstand) {
-		float winkel = berechneWinkel(aktuellerAbstand);
+		float differenz = letzterAbstand - aktuellerAbstand;
+		float winkel = berechneWinkel(differenz);
+
+		if (winkel < -90) {
+			motor.drehenAufDerStelle(-20);
+			korregiereAbstand(messeAbstand());
+		}
+		// Wenn Winkel ungefähr -100 dann drehe nach links und Messe erneut
+
+		// Erste moeglichkeit: Drehen bis Wand anschauen
+		// vor oder zurueck
+		// drehe ursprung
+		motor.drehenAufDerStelle((int) winkel);
+		motor.fahreGerade(differenz / KONSTANTE_RAD_UMFANG);
+		motor.drehenAufDerStelle(90);
+
+		// zweite moeglichkeit :
+		// nach links vorne Fahren, bis der Abstand richtig
 		// TODO Steven
 	}
 
@@ -239,8 +271,6 @@ public class Robot {
 		return abstand < GRENZWERT_ABSTAND_WAND_FAHREN;
 	}
 
-	
-
 	public void drehenAufDerStelle() {
 
 		motor.drehenAufDerStelle(-90);
@@ -249,18 +279,18 @@ public class Robot {
 	public float messeInfrarot() {
 		return infrarotSensor.messeAbstand();
 	}
-	
+
 	// /**
-		// *
-		// * @return Helligkeit in Prozent, 0-100
-		// */
-		// public int getLichtInProzent(LeftRight lr) {
-		// float sample[] = new float[1];
-		// if (lr.equals(LEFT)) {
-		// lichtSensorLinks.getWert();
-		// } else {
-		// lichtSensorRechts.getWert();
-		// }
-		// return new Double(sample[0] * 100.0).intValue();
-		// }
+	// *
+	// * @return Helligkeit in Prozent, 0-100
+	// */
+	// public int getLichtInProzent(LeftRight lr) {
+	// float sample[] = new float[1];
+	// if (lr.equals(LEFT)) {
+	// lichtSensorLinks.getWert();
+	// } else {
+	// lichtSensorRechts.getWert();
+	// }
+	// return new Double(sample[0] * 100.0).intValue();
+	// }
 }

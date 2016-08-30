@@ -1,18 +1,20 @@
 package project.motors;
 
+import static project.Direction.LEFT;
+import static project.Direction.RIGHT;
+
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.hardware.port.Port;
 import lejos.robotics.RegulatedMotor;
 import project.Direction;
-
-import static project.Direction.*;
 
 public class Motor {
 
 	private static final int TOP_SPEED = 740;
 	private static final double RADABSTAND = 12.2;
 	private static final double RADDURCHMESSER = 6;
-	private static final double BODENFAKTOR = 1; // je schlechter der Boden, desto hoeher der Faktor
+	private static final double BODENFAKTOR = 1; // je schlechter der Boden,
+													// desto hoeher der Faktor
 
 	private static final int GRAD_FUER_DREHUNG = 380;
 
@@ -100,15 +102,15 @@ public class Motor {
 	 *            gibt an um wie viel Grad sich der Roboter drehen soll
 	 */
 	public void drehenAufDerStelle(int grad) {
-		
+
 		double linksVorher = motorLinks.getTachoCount();
 		double rechtsVorher = motorRechts.getTachoCount();
-		
+
 		double linksGrad = 0;
 		double rechtsGrad = 0;
 		if (grad == 0)
 			return;
-		
+
 		rechtsGrad = berechneUmdrehungenProRunde() * grad * BODENFAKTOR;
 		linksGrad = -1 * rechtsGrad;
 
@@ -124,11 +126,25 @@ public class Motor {
 		motorLinks.endSynchronization();
 		motorLinks.waitComplete();
 		motorRechts.waitComplete();
-		
+
 		double linksNachher = motorLinks.getTachoCount();
 		double rechtsNachher = motorRechts.getTachoCount();
 		double differenzLinks = linksVorher - linksNachher;
-		double differenzRechts = rechtsVorher -rechtsNachher;
+		double differenzRechts = rechtsVorher - rechtsNachher;
 		System.out.println("Links: " + differenzLinks + ", Rechts: " + differenzRechts);
+	}
+
+	public void fahreGerade(float f) {
+		motorLinks.synchronizeWith(new RegulatedMotor[] { motorRechts });
+		motorLinks.startSynchronization();
+
+		motorLinks.rotate((int) (f * 360));
+		motorRechts.rotate((int) (f * 360));
+
+		motorLinks.endSynchronization();
+
+		motorLinks.waitComplete();
+		motorRechts.waitComplete();
+
 	}
 }
