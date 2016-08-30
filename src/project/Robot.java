@@ -32,7 +32,7 @@ public class Robot {
 
 	private static final float FAHRE_GERADE_DISTANZ = 5f;
 	private static final int MAGISCHE_TOLERANZ_KONSTANTE = 1;
-	private static final float KONSTANTE_RAD_UMFANG = 0;
+	private static final float KONSTANTE_RAD_UMFANG = 5.6f;
 
 	private float letzterAbstand;
 
@@ -280,17 +280,4 @@ public class Robot {
 		return infrarotSensor.messeAbstand();
 	}
 
-	// /**
-	// *
-	// * @return Helligkeit in Prozent, 0-100
-	// */
-	// public int getLichtInProzent(LeftRight lr) {
-	// float sample[] = new float[1];
-	// if (lr.equals(LEFT)) {
-	// lichtSensorLinks.getWert();
-	// } else {
-	// lichtSensorRechts.getWert();
-	// }
-	// return new Double(sample[0] * 100.0).intValue();
-	// }
 }
