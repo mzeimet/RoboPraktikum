@@ -165,7 +165,7 @@ public class Robot {
 
 	public void fahreEinFeld(float vergleichsAbstand) {
 		if (abstandVeraendert(vergleichsAbstand))
-			korregiereAbstand(vergleichsAbstand);
+			korregiereAbstand();
 
 		motor.setGeschwindigkeit(30);
 		motor.fahreGerade(1);
@@ -203,13 +203,14 @@ public class Robot {
 		return (float) Math.toDegrees(Math.asin(differenz / hypothenuse));
 	}
 
-	private void korregiereAbstand(float aktuellerAbstand) {
+	private void korregiereAbstand() {
+		float aktuellerAbstand = messeAbstand();
 		float differenz = letzterAbstand - aktuellerAbstand;
 		float winkel = berechneWinkel(differenz);
 
 		if (winkel < -90) {
 			motor.drehenAufDerStelle(-20);
-			korregiereAbstand(messeAbstand());
+			korregiereAbstand();
 		}
 		// Wenn Winkel ungefähr -100 dann drehe nach links und Messe erneut
 
@@ -218,7 +219,7 @@ public class Robot {
 		// drehe ursprung
 		motor.drehenAufDerStelle((int) winkel);
 		motor.fahreGerade(differenz / KONSTANTE_RAD_UMFANG);
-		motor.drehenAufDerStelle(90);
+//		motor.drehenAufDerStelle(90);
 
 		// zweite moeglichkeit :
 		// nach links vorne Fahren, bis der Abstand richtig
