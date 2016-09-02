@@ -33,7 +33,7 @@ public class Main {
 //		while(true){
 //			robot.checkeHindernisInfrarot(Direction.RIGHT);
 //			System.out.println(robot.messeInfrarot());
-			System.out.println(robot.messeAbstand());
+//			System.out.println(robot.messeAbstand());
 //		}
 	}
 
