@@ -28,19 +28,20 @@ public class Motor {
 
 	public void fahreGerade(int rotationen) {
 
-		motorLinks.synchronizeWith(new RegulatedMotor[] { motorRechts });
-		motorLinks.startSynchronization();
-
 		int i = 0;
 		while (i < rotationen) {
+
+			motorLinks.synchronizeWith(new RegulatedMotor[] { motorRechts });
+			motorLinks.startSynchronization();
+
 			DriveSmooth();
 			i++;
+
+			motorLinks.endSynchronization();
+
+			motorLinks.waitComplete();
+			motorRechts.waitComplete();
 		}
-
-		motorLinks.endSynchronization();
-
-		motorLinks.waitComplete();
-		motorRechts.waitComplete();
 	}
 
 	private void DriveSmooth() {
