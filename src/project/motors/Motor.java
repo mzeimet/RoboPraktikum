@@ -16,8 +16,6 @@ public class Motor {
 	private static final double BODENFAKTOR = 1; // je schlechter der Boden,
 													// desto hoeher der Faktor
 
-	private static final int GRAD_FUER_DREHUNG = 380;
-
 	private EV3LargeRegulatedMotor motorLinks;
 	private EV3LargeRegulatedMotor motorRechts;
 
