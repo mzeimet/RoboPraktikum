@@ -146,12 +146,13 @@ public class Robot {
 
 		}
 	}
+
 	/**
 	 * Prueft ob der US-sensor richtige werte liefert, noch zu impelenieren TODO
 	 * 
 	 * @return
-	 */		
-	private boolean pruefeUltraschallMitInfrarot(){
+	 */
+	private boolean pruefeUltraschallMitInfrarot() {
 		return checkeHindernisInfrarot(FORWARD);
 	}
 
@@ -222,9 +223,9 @@ public class Robot {
 		float differenz = letzterAbstand - aktuellerAbstand;
 		float winkel = berechneWinkel(differenz);
 
-		motor.drehenAufDerStelle((int) -winkel);
+		motor.drehenAufDerStelle((int) winkel);
 		motor.drehenAufDerStelle(-90);
-		motor.fahreGerade((double) differenz / KONSTANTE_RAD_UMFANG);
+		motor.fahreGerade((double) -differenz / KONSTANTE_RAD_UMFANG);
 		motor.drehenAufDerStelle(90);
 
 	}

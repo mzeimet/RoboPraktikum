@@ -1,10 +1,7 @@
 package project;
 
-
-
 import lejos.hardware.port.MotorPort;
 import lejos.hardware.port.Port;
-import project.Robot;
 
 public class Main {
 
@@ -12,7 +9,7 @@ public class Main {
 	public static final String LICHT_PORT_RECHTS = "S4";
 
 	public static final String IR_PORT = "S3";
-	
+
 	public static final String US_PORT = "S2";
 
 	public static final Port LINKER_MOTOR_PORT = MotorPort.B;
@@ -28,13 +25,13 @@ public class Main {
 
 	private void run() {
 		Robot robot = new Robot(US_PORT, IR_PORT, MINI_MOTOR_PORT, LINKER_MOTOR_PORT, RECHTER_MOTOR_PORT);
-		
+
 		robot.findeWand();
-//		while(true){
-//			robot.checkeHindernisInfrarot(Direction.RIGHT);
-//			System.out.println(robot.messeInfrarot());
-			System.out.println(robot.messeAbstand());
-//		}
+		// while(true){
+		// robot.checkeHindernisInfrarot(Direction.RIGHT);
+		// System.out.println(robot.messeInfrarot());
+		System.out.println(robot.messeAbstand());
+		// }
 	}
 
 	private boolean kleinerSchwellwert(int percentLeft, int percentRight) {
