@@ -148,7 +148,12 @@ public class Robot {
 	}
 
 	private boolean abstandVeraendert(float vergleichsAbstand) {
-		float jetztAbstand = messeAbstand();
+		float jetztAbstand = 0;
+		try{
+			jetztAbstand = messeAbstand();
+		} catch (Exception e) {
+			
+		}
 
 		return vergleichsAbstand > jetztAbstand + MAGISCHE_TOLERANZ_KONSTANTE
 				|| vergleichsAbstand < jetztAbstand - MAGISCHE_TOLERANZ_KONSTANTE;
@@ -176,18 +181,29 @@ public class Robot {
 	 * Misst den Abstand des IR-Sensors zum nächstmöglichen Objekt
 	 * 
 	 * @return
+	 * @throws Exception:
+	 *             Geringster Abstand wurde an einer messgrenze (+-
+	 *             miniMotor.MAX_GRADZAHL) gemessen, d.h. korrektheit des wertes
+	 *             ist nicht mehr garantiert
 	 */
-	public float messeAbstand() {
+	public float messeAbstand() throws Exception {
 		float min = Float.MAX_VALUE;
+		boolean groessterWinkel = true;
 		for (int aktGradZahl = -minimotor.getMaxGradzahl(); aktGradZahl <= minimotor
 				.getMaxGradzahl(); aktGradZahl += INTERVALL_GROESSE_IR_MESSUNG) {
 			minimotor.drehe(aktGradZahl);
 			float abstand = infrarotSensor.messeAbstand();
 			if (abstand < min) {
 				min = abstand;
+				if (Math.abs(aktGradZahl) < minimotor.getMaxGradzahl()) {
+					groessterWinkel = false;
+				}
 			}
 		}
 		minimotor.dreheZurueck();
+		if (groessterWinkel) {
+			throw new Exception();
+		}
 		return min;
 	}
 
@@ -219,7 +235,7 @@ public class Robot {
 		// drehe ursprung
 		motor.drehenAufDerStelle((int) winkel);
 		motor.fahreGerade(differenz / KONSTANTE_RAD_UMFANG);
-//		motor.drehenAufDerStelle(90);
+		// motor.drehenAufDerStelle(90);
 
 		// zweite moeglichkeit :
 		// nach links vorne Fahren, bis der Abstand richtig
