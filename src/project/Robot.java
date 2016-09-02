@@ -146,18 +146,12 @@ public class Robot {
 
 		}
 	}
-
-		try{
-			jetztAbstand = messeAbstand();
-		} catch (Exception e) {
-			
-		}
 	/**
 	 * Prueft ob der US-sensor richtige werte liefert, noch zu impelenieren TODO
 	 * 
 	 * @return
-	 */
-	private boolean pruefeUltraschallMitInfrarot() {
+	 */		
+	private boolean pruefeUltraschallMitInfrarot(){
 		return checkeHindernisInfrarot(FORWARD);
 	}
 
