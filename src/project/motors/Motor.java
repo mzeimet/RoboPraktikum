@@ -134,7 +134,7 @@ public class Motor {
 		System.out.println("Links: " + differenzLinks + ", Rechts: " + differenzRechts);
 	}
 
-	public void fahreGerade(float f) {
+	public void fahreGerade(double f) {
 		motorLinks.synchronizeWith(new RegulatedMotor[] { motorRechts });
 		motorLinks.startSynchronization();
 

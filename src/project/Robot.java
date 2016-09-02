@@ -32,7 +32,7 @@ public class Robot {
 
 	private static final float FAHRE_GERADE_DISTANZ = 5f;
 	private static final int MAGISCHE_TOLERANZ_KONSTANTE = 1;
-	private static final float KONSTANTE_RAD_UMFANG = 5.6f;
+	private static final double KONSTANTE_RAD_UMFANG = 5.6f * 3.1415926;
 
 	private float letzterAbstand;
 
@@ -88,7 +88,7 @@ public class Robot {
 			dreheZuWand();
 			letzterAbstand = messeAbstand();
 			while (!zielGefunden) {
-				folgeWand(letzterAbstand);
+				folgeWand();
 				if (!checkeHindernisInfrarot(LEFT)) {
 					// links frei
 					drehe(LEFT);
@@ -129,7 +129,7 @@ public class Robot {
 	 * Folgt der linken Wand bis diese nicht mehr da ist oder er vor einem
 	 * Hinderniss steht
 	 */
-	public void folgeWand(float vergleichsAbstand) {
+	public void folgeWand() {
 		boolean linksKeineWand = false;
 		boolean stehtVorHinderniss = false;
 		boolean darfFahren = true;
@@ -141,24 +141,17 @@ public class Robot {
 			}
 			darfFahren = !linksKeineWand && !stehtVorHinderniss;
 			if (darfFahren) {
-				fahreEinFeld(vergleichsAbstand);
+				fahreEinFeld();
 			}
 
 		}
 	}
 
-	private boolean abstandVeraendert(float vergleichsAbstand) {
-		float jetztAbstand = 0;
 		try{
 			jetztAbstand = messeAbstand();
 		} catch (Exception e) {
 			
 		}
-
-		return vergleichsAbstand > jetztAbstand + MAGISCHE_TOLERANZ_KONSTANTE
-				|| vergleichsAbstand < jetztAbstand - MAGISCHE_TOLERANZ_KONSTANTE;
-	}
-
 	/**
 	 * Prueft ob der US-sensor richtige werte liefert, noch zu impelenieren TODO
 	 * 
@@ -168,9 +161,8 @@ public class Robot {
 		return checkeHindernisInfrarot(FORWARD);
 	}
 
-	public void fahreEinFeld(float vergleichsAbstand) {
-		if (abstandVeraendert(vergleichsAbstand))
-			korregiereAbstand();
+	public void fahreEinFeld() {
+		korregiereAbstand();
 
 		motor.setGeschwindigkeit(30);
 		motor.fahreGerade(1);
@@ -220,26 +212,27 @@ public class Robot {
 	}
 
 	private void korregiereAbstand() {
-		float aktuellerAbstand = messeAbstand();
+		float aktuellerAbstand = 0;
+		try {
+			aktuellerAbstand = messeAbstand();
+		} catch (Exception e) {
+			motor.drehenAufDerStelle(-20);
+			korregiereAbstand();
+			return;
+		}
+
+		if (letzterAbstand < aktuellerAbstand + MAGISCHE_TOLERANZ_KONSTANTE
+				&& letzterAbstand > aktuellerAbstand - MAGISCHE_TOLERANZ_KONSTANTE)
+			return;
+
 		float differenz = letzterAbstand - aktuellerAbstand;
 		float winkel = berechneWinkel(differenz);
 
-		if (winkel < -90) {
-			motor.drehenAufDerStelle(-20);
-			korregiereAbstand();
-		}
-		// Wenn Winkel ungefähr -100 dann drehe nach links und Messe erneut
+		motor.drehenAufDerStelle((int) -winkel);
+		motor.drehenAufDerStelle(-90);
+		motor.fahreGerade((double) differenz / KONSTANTE_RAD_UMFANG);
+		motor.drehenAufDerStelle(90);
 
-		// Erste moeglichkeit: Drehen bis Wand anschauen
-		// vor oder zurueck
-		// drehe ursprung
-		motor.drehenAufDerStelle((int) winkel);
-		motor.fahreGerade(differenz / KONSTANTE_RAD_UMFANG);
-		// motor.drehenAufDerStelle(90);
-
-		// zweite moeglichkeit :
-		// nach links vorne Fahren, bis der Abstand richtig
-		// TODO Steven
 	}
 
 	private void fahreZuWand() {
