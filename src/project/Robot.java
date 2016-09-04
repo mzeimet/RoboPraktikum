@@ -91,7 +91,13 @@ public class Robot {
 				folgeWand();
 				if (!checkeHindernisInfrarot(LEFT)) {
 					// links frei
+					motor.setGeschwindigkeit(30);
+					motor.fahreGerade(3);
+					steheStill();
 					drehe(LEFT);
+					motor.setGeschwindigkeit(30);
+					motor.fahreGerade(3);
+					steheStill();
 				} else { // links hinderniss
 					if (checkeHindernisInfrarot(RIGHT)) {
 						// sackgasse
