@@ -9,7 +9,7 @@ import project.motors.MiniMotor;
 import project.motors.Motor;
 import project.sensors.InfrarotSensor;
 import project.sensors.Lichtsensor;
-import project.sensors.UltaschallSensor;
+import project.sensors.UltraschallSensor;
 
 public class Robot {
 
@@ -18,7 +18,7 @@ public class Robot {
 
 	private InfrarotSensor infrarotSensor;
 
-	private UltaschallSensor ultraschallSensor;
+	private UltraschallSensor ultraschallSensor;
 
 	private Motor motor;
 	private MiniMotor minimotor;
@@ -45,7 +45,7 @@ public class Robot {
 	}
 
 	public Robot(String usPort, String irPort, Port miniMotorPort, Port linkerMotorPort, Port rechterMotorPort) {
-		this.ultraschallSensor = new UltaschallSensor(usPort);
+		this.ultraschallSensor = new UltraschallSensor(usPort);
 		this.minimotor = new MiniMotor(miniMotorPort);
 		this.motor = new project.motors.Motor(linkerMotorPort, rechterMotorPort);
 		this.infrarotSensor = new InfrarotSensor(irPort);
