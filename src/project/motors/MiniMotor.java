@@ -10,6 +10,7 @@ import project.Direction;
  * Dreht entweder um 90 Grad nach Links oder Rechts, jedoch nur abwechselnd
  */
 public class MiniMotor {
+	
 
 	private EV3MediumRegulatedMotor motor;
 

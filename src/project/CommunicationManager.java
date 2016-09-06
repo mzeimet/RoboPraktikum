@@ -10,6 +10,7 @@ import lejos.remote.nxt.NXTConnection;
 
 public class CommunicationManager {
 
+	
 	public LinkedList<Integer> start(LinkedList<Integer> memory) {
 
 		testData(memory);

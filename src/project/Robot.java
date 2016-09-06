@@ -225,10 +225,7 @@ public class Robot {
 		float min = Float.MAX_VALUE;
 		boolean groessterWinkel = true;
 		for (int aktGradZahl = -minimotor
-				.getMaxGradzahl(); aktGradZahl <= 0 /*
-													 * minimotor
-													 * .getMaxGradzahl()
-													 */; aktGradZahl += INTERVALL_GROESSE_IR_MESSUNG) {
+				.getMaxGradzahl(); aktGradZahl <= minimotor.getMaxGradzahl(); aktGradZahl += INTERVALL_GROESSE_IR_MESSUNG) {
 			minimotor.drehe(aktGradZahl);
 			float abstand = infrarotSensorVorne.messeAbstand();
 			if (abstand < min) {
