@@ -19,7 +19,7 @@ public class Robot {
 	private LinkedList<Integer> memory = new LinkedList<Integer>();
 
 	private Lichtsensor lichtSensor;
-	
+
 	private InfrarotSensor infrarotSensorVorne;
 	private InfrarotSensor infrarotSensorHinten;
 
@@ -38,14 +38,15 @@ public class Robot {
 	private static final float FAHRE_GERADE_DISTANZ = 5f;
 	private static final int MAGISCHE_TOLERANZ_KONSTANTE = 1;
 	private static final double KONSTANTE_RAD_UMFANG = 5.6f * 3.1415926;
-	private static final int ABSTAND_IR_SENSOREN = 0; //TODO
+	private static final int ABSTAND_IR_SENSOREN = 0; // TODO
 	private static final int TOLERANZ_DIFF_IR = 2;
 
 	private float letzterAbstand;
 
 	private boolean zielGefunden = false;
 
-	public Robot(String usPort, String irPortVorne, String irPortHinten, Port miniMotorPort, Port linkerMotorPort, Port rechterMotorPort, String lichtPort) {
+	public Robot(String usPort, String irPortVorne, String irPortHinten, Port miniMotorPort, Port linkerMotorPort,
+			Port rechterMotorPort, String lichtPort) {
 		this.ultraschallSensor = new UltraschallSensor(usPort);
 		this.minimotor = new MiniMotor(miniMotorPort);
 		this.motor = new project.motors.Motor(linkerMotorPort, rechterMotorPort);
@@ -64,7 +65,7 @@ public class Robot {
 	}
 
 	private void drehe(Direction richtung) {
-		if (richtung.equals(RIGHT)){
+		if (richtung.equals(RIGHT)) {
 			SaveMove(1);
 		} else {
 			SaveMove(0);
@@ -77,9 +78,10 @@ public class Robot {
 	}
 
 	private void SaveMove(int dir) {
-		if (dir <0 )throw new IllegalArgumentException();
+		if (dir < 0)
+			throw new IllegalArgumentException();
 		switch (dir) {
-		case 0: //LEFT
+		case 0: // LEFT
 			getMemory().addFirst(1);
 			break;
 		case 1: // RIGHT
@@ -192,14 +194,14 @@ public class Robot {
 			darfFahren = !linksKeineWand && !stehtVorHinderniss && abstandStimmt();
 		}
 		motor.stop();
-		tachoCount = motor.getTachoCount()-tachoCount; //TODO
+		tachoCount = motor.getTachoCount() - tachoCount; // TODO
 		SaveMove(tachoCount);
 	}
 
 	private boolean abstandStimmt() {
-		if(Math.abs(messeAbstand(0) - letzterAbstand) > MAGISCHE_TOLERANZ_KONSTANTE){
+		if (Math.abs(messeAbstand(0) - letzterAbstand) > MAGISCHE_TOLERANZ_KONSTANTE) {
 			int diff = Math.abs(messeAbstand(0) - messeAbstand(1)) - ABSTAND_IR_SENSOREN;
-			if ( diff > TOLERANZ_DIFF_IR){
+			if (diff > TOLERANZ_DIFF_IR) {
 				return false;
 			}
 		}
