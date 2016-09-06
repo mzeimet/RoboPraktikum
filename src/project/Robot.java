@@ -38,6 +38,8 @@ public class Robot {
 	private static final float FAHRE_GERADE_DISTANZ = 5f;
 	private static final int MAGISCHE_TOLERANZ_KONSTANTE = 1;
 	private static final double KONSTANTE_RAD_UMFANG = 5.6f * 3.1415926;
+	private static final int ABSTAND_IR_SENSOREN = 0; //TODO
+	private static final int TOLERANZ_DIFF_IR = 2;
 
 	private float letzterAbstand;
 
@@ -62,7 +64,11 @@ public class Robot {
 	}
 
 	private void drehe(Direction richtung) {
-		SaveMove(richtung);
+		if (richtung.equals(RIGHT)){
+			SaveMove(1);
+		} else {
+			SaveMove(0);
+		}
 		motor.drehe(richtung);
 	}
 
@@ -70,19 +76,17 @@ public class Robot {
 		return ultraschallSensor.getAbstandInCm();
 	}
 
-	private void SaveMove(Direction dir) {
+	private void SaveMove(int dir) {
+		if (dir <0 )throw new IllegalArgumentException();
 		switch (dir) {
-		case FORWARD:
-			getMemory().addFirst(0);
-			break;
-		case LEFT:
+		case 0: //LEFT
 			getMemory().addFirst(1);
 			break;
-		case RIGHT:
+		case 1: // RIGHT
 			getMemory().addFirst(2);
 			break;
-
-		default:
+		default: // FORWARD
+			// tanze im Kreis und singe ein lied TODO Steven
 			break;
 		}
 
@@ -110,7 +114,6 @@ public class Robot {
 
 	public void findeWand() {
 		try {
-			// sucheRichtungWand();
 			fahreZuWand();
 			dreheZuWand();
 			try {
@@ -148,9 +151,9 @@ public class Robot {
 		minimotor.dreheZurueck();
 		float min = Float.MAX_VALUE;
 		for (int aktGradZahl = -minimotor.getMaxGradzahl(); aktGradZahl <= minimotor
-				.getMaxGradzahl(); aktGradZahl += INTERVALL_GROESSE_IR_MESSUNG / 2) {
+				.getMaxGradzahl(); aktGradZahl += INTERVALL_GROESSE_IR_MESSUNG) {
 			minimotor.drehe(aktGradZahl);
-			float abstand = infrarotSensor.messeAbstand();
+			float abstand = infrarotSensorVorne.messeAbstand();
 			if (abstand < min) {
 				min = abstand;
 				gradBeiMin = aktGradZahl;
@@ -158,30 +161,49 @@ public class Robot {
 		}
 		minimotor.dreheZurueck();
 		motor.drehenAufDerStelle(gradBeiMin);
-		// motor.drehe(RIGHT);
 		drehe(RIGHT);
 	}
 
 	/**
 	 * Folgt der linken Wand bis diese nicht mehr da ist oder er vor einem
-	 * Hinderniss steht
+	 * Hindernis steht
 	 */
 	public void folgeWand() {
+		int tachoCount = motor.getTachoCount();
 		boolean linksKeineWand = false;
 		boolean stehtVorHinderniss = false;
 		boolean darfFahren = true;
+		linksKeineWand = !checkeHindernisInfrarot(LEFT);
+		stehtVorHinderniss = checkeHindernisUltraschall();
+		if (stehtVorHinderniss) {
+			stehtVorHinderniss = pruefeUltraschallMitInfrarot();
+		}
+		darfFahren = !linksKeineWand && !stehtVorHinderniss;
+		if (darfFahren) {
+			letzterAbstand = messeAbstand(0);
+			fahre();
+		}
 		while (darfFahren) {
 			linksKeineWand = !checkeHindernisInfrarot(LEFT);
 			stehtVorHinderniss = checkeHindernisUltraschall();
 			if (stehtVorHinderniss) {
 				stehtVorHinderniss = pruefeUltraschallMitInfrarot();
 			}
-			darfFahren = !linksKeineWand && !stehtVorHinderniss;
-			if (darfFahren) {
-				fahreEinFeld();
-			}
-
+			darfFahren = !linksKeineWand && !stehtVorHinderniss && abstandStimmt();
 		}
+		motor.stop();
+		tachoCount = motor.getTachoCount()-tachoCount; //TODO
+		SaveMove(tachoCount);
+	}
+
+	private boolean abstandStimmt() {
+		if(Math.abs(messeAbstand(0) - letzterAbstand) > MAGISCHE_TOLERANZ_KONSTANTE){
+			int diff = Math.abs(messeAbstand(0) - messeAbstand(1)) - ABSTAND_IR_SENSOREN;
+			if ( diff > TOLERANZ_DIFF_IR){
+				return false;
+			}
+		}
+		return true;
 	}
 
 	/**
@@ -193,13 +215,9 @@ public class Robot {
 		return checkeHindernisInfrarot(FORWARD);
 	}
 
-	public void fahreEinFeld() {
-		korregiereAbstand();
-
-		SaveMove(FORWARD);
+	public void fahre() {
 		motor.setGeschwindigkeit(30);
-		motor.fahreGerade(1);
-		steheStill();
+		motor.fahreGerade();
 	}
 
 	/**
@@ -278,30 +296,6 @@ public class Robot {
 			nichtErreicht = getUltraschallAbstand() > GRENZWERT_ABSTAND_WAND_FAHREN;
 		}
 		steheStill();
-	}
-
-	/**
-	 * Dreht den Roboter zu einer Wand. dreht in immer kleineren Abständen.
-	 * 
-	 * @throws Exception
-	 */
-	private void sucheRichtungWand() throws Exception {
-		System.out.println("SucheWand");
-		int i = 2;
-		int gradDrehung;
-		while (i < 32) {
-			for (int j = 0; j < i; j++) {
-				if (getUltraschallAbstand() > GRENZWERT_ABSTAND_WAND_SUCHEN) {
-					System.out.println(getUltraschallAbstand());
-					gradDrehung = 360 / i;
-					// rotiere um grad Grad zum neuen suchen TODO
-				} else {
-					return; // Gefunden!
-				}
-			}
-			i *= 2;
-		}
-		throw new Exception(FEHLER_KEINE_WAND);
 	}
 
 	public boolean checkeHindernisInfrarot(Direction richtung) {

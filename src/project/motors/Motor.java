@@ -26,22 +26,22 @@ public class Motor {
 		this.motorRechts = new EV3LargeRegulatedMotor(rechterMotorPort);
 	}
 
-	public void fahreGerade(int rotationen) {
+	public void fahreGerade() {
 
-		int i = 0;
-		while (i < rotationen) {
+		motorLinks.synchronizeWith(new RegulatedMotor[] { motorRechts });
+		motorLinks.startSynchronization();
 
-			motorLinks.synchronizeWith(new RegulatedMotor[] { motorRechts });
-			motorLinks.startSynchronization();
+		DriveSmooth();
+		motorLinks.forward();
 
-			DriveSmooth();
-			i++;
+		motorLinks.endSynchronization();
 
-			motorLinks.endSynchronization();
-
-			motorLinks.waitComplete();
-			motorRechts.waitComplete();
-		}
+		motorLinks.waitComplete();
+		motorRechts.waitComplete();
+	}
+	
+	public void stop() {
+		motorLinks.flt();
 	}
 
 	private void DriveSmooth() {
@@ -147,5 +147,9 @@ public class Motor {
 		motorLinks.waitComplete();
 		motorRechts.waitComplete();
 
+	}
+	
+	public int getTachoCount() {
+		return motorLinks.getTachoCount();
 	}
 }
