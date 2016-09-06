@@ -1,9 +1,11 @@
 package project;
 
-import java.util.LinkedList;
 import static project.Direction.FORWARD;
 import static project.Direction.LEFT;
 import static project.Direction.RIGHT;
+
+import java.util.LinkedList;
+
 import lejos.hardware.port.Port;
 import project.motors.MiniMotor;
 import project.motors.Motor;
@@ -36,7 +38,7 @@ public class Robot {
 	private static final float GRENZWERT_ABSTAND_WAND_FAHREN = 5;
 	private static final float FELDLAENGE = 12;
 	private static final float GRENZWERT_ABWEICHUNG_IR = 1f;
-	private static final int INTERVALL_GROESSE_IR_MESSUNG = 20;
+	private static final int INTERVALL_GROESSE_IR_MESSUNG = 10;
 
 	private static final float FAHRE_GERADE_DISTANZ = 5f;
 	private static final int MAGISCHE_TOLERANZ_KONSTANTE = 1;
@@ -51,14 +53,12 @@ public class Robot {
 		this.minimotor = new MiniMotor(miniMotorPort);
 		this.motor = new project.motors.Motor(linkerMotorPort, rechterMotorPort);
 		this.infrarotSensor = new InfrarotSensor(irPort);
-		this.motor = new project.motors.Motor(linkerMotorPort, rechterMotorPort);
 		Brain = new CommunicationManager();
 	}
 
 	public void dreheInfrarotSensor(Direction richtung) {
 		minimotor.drehe(richtung);
 	}
-
 
 	// public Robot(String irPortNummer) {
 	// this.infrarotSensor = new InfrarotSensor(irPortNummer);
@@ -110,6 +110,7 @@ public class Robot {
 	public void setBrain(CommunicationManager brain) {
 		Brain = brain;
 	}
+
 	public void drehe(int grad) {
 		motor.drehenAufDerStelle(grad);
 	}
@@ -161,7 +162,8 @@ public class Robot {
 		}
 		minimotor.dreheZurueck();
 		motor.drehenAufDerStelle(gradBeiMin);
-		motor.drehe(RIGHT);
+		// motor.drehe(RIGHT);
+		drehe(RIGHT);
 	}
 
 	/**
@@ -198,6 +200,7 @@ public class Robot {
 	public void fahreEinFeld() {
 		korregiereAbstand();
 
+		SaveMove(FORWARD);
 		motor.setGeschwindigkeit(30);
 		motor.fahreGerade(1);
 		steheStill();
@@ -273,6 +276,7 @@ public class Robot {
 		motor.setGeschwindigkeit(30);
 		boolean nichtErreicht = getUltraschallAbstand() > GRENZWERT_ABSTAND_WAND_FAHREN;
 		while (nichtErreicht) {
+			SaveMove(FORWARD);
 			motor.fahreGerade(1);
 			nichtErreicht = getUltraschallAbstand() > GRENZWERT_ABSTAND_WAND_FAHREN;
 		}
@@ -316,7 +320,6 @@ public class Robot {
 	}
 
 	public void drehenAufDerStelle() {
-
 		motor.drehenAufDerStelle(-90);
 	}
 
