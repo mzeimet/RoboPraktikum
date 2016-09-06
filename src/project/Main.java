@@ -1,11 +1,17 @@
 package project;
 
+import static project.Config.IR_PORT_HINTEN;
+import static project.Config.IR_PORT_VORNE;
+import static project.Config.LICHT_PORT;
+import static project.Config.LINKER_MOTOR_PORT;
+import static project.Config.MINI_MOTOR_PORT;
+import static project.Config.RECHTER_MOTOR_PORT;
+import static project.Config.SCHWELLWERT_STOP;
+import static project.Config.US_PORT;
+
 import java.util.LinkedList;
-import static project.Config.*;
+
 import lejos.hardware.Sound;
-import lejos.hardware.port.MotorPort;
-import lejos.hardware.port.Port;
-import static project.Direction.*;
 
 public class Main {
 
@@ -14,11 +20,12 @@ public class Main {
 	}
 
 	private void run() {
-		Robot robot = new Robot(US_PORT, IR_PORT_VORNE, IR_PORT_HINTEN, MINI_MOTOR_PORT, LINKER_MOTOR_PORT, RECHTER_MOTOR_PORT, LICHT_PORT);
-		LinkedList<Integer> memory = robot.getBrain().start(robot.getMemory());
+		Robot robot = new Robot(US_PORT, IR_PORT_VORNE, IR_PORT_HINTEN, MINI_MOTOR_PORT, LINKER_MOTOR_PORT,
+				RECHTER_MOTOR_PORT, LICHT_PORT);
 
 		Sound.beep();
 		robot.findeWand();
+		LinkedList<Integer> memory = robot.getBrain().start(robot.getMemory());
 		Sound.beep();
 		Sound.beep();
 		Sound.beep();

@@ -1,5 +1,13 @@
 package project;
 
+import static project.Config.ABSTAND_IR_SENSOREN;
+import static project.Config.CM_UM_KURVE;
+import static project.Config.FAHRE_GERADE_DISTANZ;
+import static project.Config.GRENZWERT_ABSTAND_WAND_FAHREN;
+import static project.Config.INTERVALL_GROESSE_IR_MESSUNG;
+import static project.Config.MAGISCHE_TOLERANZ_KONSTANTE;
+import static project.Config.START_SPEED;
+import static project.Config.TOLERANZ_DIFF_IR;
 import static project.Direction.LEFT;
 import static project.Direction.RIGHT;
 
@@ -11,7 +19,6 @@ import project.motors.Motor;
 import project.sensors.InfrarotSensor;
 import project.sensors.Lichtsensor;
 import project.sensors.UltraschallSensor;
-import static project.Config.*;
 
 public class Robot {
 
@@ -156,17 +163,25 @@ public class Robot {
 		boolean darfFahren = !linksKeineWand && !stehtVorHinderniss;
 		if (darfFahren) {
 			letzterAbstand = messeAbstand(0);
+			float bla = messeAbstand(1);
 			fahre();
 		}
 		while (darfFahren) {
 			linksKeineWand = !checkeHindernisInfrarot();
 			stehtVorHinderniss = checkeHindernisUltraschall();
-			korregiereAbstand();
-			darfFahren = !linksKeineWand && !stehtVorHinderniss && pruefeUndKorrigiere();
+			darfFahren = !linksKeineWand && !stehtVorHinderniss;
+			System.out.println("Koorektur Beginn");
+			pruefeUndKorrigiere();
 		}
 		motor.stop();
 		tachoCount = motor.getTachoCount() - tachoCount; // TODO
 		SaveMove(tachoCount);
+	}
+
+	private void korregiereAbstand(float abstandVorne) {
+
+		System.out.println("Shit");
+
 	}
 
 	/**
@@ -176,20 +191,36 @@ public class Robot {
 	 * @return true falls noch alles stimmt
 	 */
 	private boolean pruefeUndKorrigiere() {
+		System.out.println("Start Korrektur");
 		float abstandVorne = messeAbstand(0);
 		float abstandHinten = messeAbstand(1);
-		float diff = abstandVorne - abstandHinten;
 
-		if (diff > TOLERANZ_DIFF_IR) {
-			motor.setGeschwindigkeitSpezifisch(END_WERT + diff * 2, Direction.RIGHT);
-			motor.setGeschwindigkeitSpezifisch(END_WERT, Direction.LEFT);
-		} else {
-			if (diff < 0 && Math.abs(diff) > TOLERANZ_DIFF_IR) {
-				motor.setGeschwindigkeitSpezifisch(END_WERT + Math.abs(diff) * 2, Direction.LEFT);
-				motor.setGeschwindigkeitSpezifisch(END_WERT, Direction.RIGHT);
-			}
+		if (letzterAbstand + MAGISCHE_TOLERANZ_KONSTANTE < abstandVorne
+				|| letzterAbstand - MAGISCHE_TOLERANZ_KONSTANTE > abstandVorne) {
+			System.out.println("Koorektur Abstand zur Wand");
+			korregiereAbstand(abstandVorne);
+			return true;
 		}
 
+		float diff = (abstandVorne - ABSTAND_IR_SENSOREN) - abstandHinten;
+
+		if (diff > TOLERANZ_DIFF_IR) {
+			System.out.println("Koorektur Diff WandWeg");
+			motor.setGeschwindigkeitSpezifisch(START_SPEED + diff * 2, Direction.RIGHT);
+			motor.setGeschwindigkeitSpezifisch(START_SPEED, Direction.LEFT);
+
+		} else if (diff < 0 && Math.abs(diff) > TOLERANZ_DIFF_IR) {
+			System.out.println("Koorektur Diff WandNah");
+			motor.setGeschwindigkeitSpezifisch(START_SPEED + Math.abs(diff) * 2, Direction.LEFT);
+			motor.setGeschwindigkeitSpezifisch(START_SPEED, Direction.RIGHT);
+
+		} else {
+			System.out.println("Merkwürdig");
+			motor.setGeschwindigkeitSpezifisch(START_SPEED, Direction.LEFT);
+			motor.setGeschwindigkeitSpezifisch(START_SPEED, Direction.RIGHT);
+		}
+		motor.forward();
+		System.out.println("Ende Korrektur");
 		return true;
 	}
 
@@ -247,24 +278,6 @@ public class Robot {
 	private float berechneWinkel(float differenz) {
 		float hypothenuse = FAHRE_GERADE_DISTANZ;
 		return (float) Math.toDegrees(Math.asin(differenz / hypothenuse));
-	}
-
-	private void korregiereAbstand() {
-		float aktuellerAbstand = 0;
-		aktuellerAbstand = messeAbstand(0);
-
-		if (letzterAbstand < aktuellerAbstand + MAGISCHE_TOLERANZ_KONSTANTE
-				&& letzterAbstand > aktuellerAbstand - MAGISCHE_TOLERANZ_KONSTANTE)
-			return;
-
-		float differenz = letzterAbstand - aktuellerAbstand;
-		float winkel = berechneWinkel(differenz);
-
-		motor.drehenAufDerStelle((int) winkel);
-		motor.drehenAufDerStelle(-90);
-		motor.fahreGerade((double) -differenz / KONSTANTE_RAD_UMFANG);
-		motor.drehenAufDerStelle(90);
-
 	}
 
 	private void fahreZuWand() {

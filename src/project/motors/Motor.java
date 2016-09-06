@@ -1,5 +1,10 @@
 package project.motors;
 
+import static project.Config.BODENFAKTOR;
+import static project.Config.RADABSTAND;
+import static project.Config.RADDURCHMESSER;
+import static project.Config.START_SPEED;
+import static project.Config.TOP_SPEED;
 import static project.Direction.LEFT;
 import static project.Direction.RIGHT;
 
@@ -7,7 +12,7 @@ import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.hardware.port.Port;
 import lejos.robotics.RegulatedMotor;
 import project.Direction;
-import static project.Config.*;
+
 public class Motor {
 
 	private EV3LargeRegulatedMotor motorLinks;
@@ -27,35 +32,40 @@ public class Motor {
 
 		motorLinks.endSynchronization();
 
-		motorLinks.waitComplete();
-		motorRechts.waitComplete();
 	}
 
 	public void stop() {
+
+		motorLinks.synchronizeWith(new RegulatedMotor[] { motorRechts });
+		motorLinks.startSynchronization();
+
 		motorLinks.flt();
+		motorRechts.flt();
+
+		motorLinks.endSynchronization();
 	}
 
 	private void DriveSmooth() {
 		int geschwindigkeit = 0;
-		motorLinks.setSpeed(geschwindigkeit);
-		motorRechts.setSpeed(geschwindigkeit);
+		setGeschwindigkeitSpezifisch(geschwindigkeit, Direction.RIGHT);
+		setGeschwindigkeitSpezifisch(geschwindigkeit, Direction.LEFT);
 
-		motorLinks.forward();
-		motorRechts.forward();
+		while (geschwindigkeit < START_SPEED) {
 
-		while (geschwindigkeit < END_WERT) {
 			geschwindigkeit++;
-			motorLinks.setSpeed(geschwindigkeit);
-			motorRechts.setSpeed(geschwindigkeit);
+			setGeschwindigkeitSpezifisch(geschwindigkeit, Direction.RIGHT);
+			setGeschwindigkeitSpezifisch(geschwindigkeit, Direction.LEFT);
+			motorLinks.forward();
+			motorRechts.forward();
 		}
 	}
 
-	public void setGeschwindigkeitSpezifisch(int percent, Direction lr) {
-		percent = validateOrCorrectPercent(percent);
+	public void setGeschwindigkeitSpezifisch(float f, Direction lr) {
+		f = validateOrCorrectPercent(f);
 		if (lr.equals(LEFT)) {
-			motorLinks.setSpeed(percent * TOP_SPEED / 100);
+			motorLinks.setSpeed(f * TOP_SPEED / 100);
 		} else {
-			motorRechts.setSpeed(percent * TOP_SPEED / 100);
+			motorRechts.setSpeed(f * TOP_SPEED / 100);
 		}
 	}
 
@@ -64,14 +74,14 @@ public class Motor {
 		setGeschwindigkeitSpezifisch(speedInPercent, RIGHT);
 	}
 
-	private int validateOrCorrectPercent(int percent) {
-		if (percent > 100) {
+	private float validateOrCorrectPercent(float f) {
+		if (f > 100) {
 			return 100;
 		}
-		if (percent < 0) {
+		if (f < 0) {
 			return 1;
 		}
-		return percent;
+		return f;
 	}
 
 	public void drehe(Direction richtung) {
@@ -152,5 +162,11 @@ public class Motor {
 
 	public int getTachoCount() {
 		return motorLinks.getTachoCount();
+	}
+
+	public void forward() {
+		motorLinks.forward();
+		motorRechts.forward();
+
 	}
 }
