@@ -4,7 +4,6 @@ import java.util.LinkedList;
 
 import lejos.hardware.port.MotorPort;
 import lejos.hardware.port.Port;
-import project.Robot;
 
 public class Main {
 
@@ -28,15 +27,14 @@ public class Main {
 
 	private void run() {
 		Robot robot = new Robot(US_PORT, IR_PORT, MINI_MOTOR_PORT, LINKER_MOTOR_PORT, RECHTER_MOTOR_PORT);
-		
+
 		LinkedList<Integer> memory = robot.getBrain().start(robot.getMemory());
 		robot.doWhatLemmingsDo(memory);
-		robot.findeWand();
-//		while(true){
-//			robot.checkeHindernisInfrarot(Direction.RIGHT);
-//			System.out.println(robot.messeInfrarot());
-//			System.out.println(robot.messeAbstand());
-//		}
+		// while(true){
+		// robot.checkeHindernisInfrarot(Direction.RIGHT);
+		// System.out.println(robot.messeInfrarot());
+		// System.out.println(robot.messeAbstand());
+		// }
 	}
 
 	private boolean kleinerSchwellwert(int percentLeft, int percentRight) {

@@ -65,21 +65,41 @@ public class Robot {
 
 	public void doWhatLemmingsDo(LinkedList<Integer> memory) {
 		System.out.println(getMemory().size());
+		boolean wandGefunden = false;
 
 		for (int i = 0; i < getMemory().size(); i++) {
+
+			if (wandGefunden)
+				korregiereAbstand();
+
 			System.out.println(getMemory().getFirst());
 			getMemory().removeFirst();
 			switch (getMemory().getFirst()) {
-			case 0:
+			case 0:// Links
 				System.out.println("Case: 0");
+				motor.fahreGerade(3);
 				motor.drehenAufDerStelle(-90);
+				motor.fahreGerade(3);
+				try {
+					letzterAbstand = messeAbstand();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				break;
-			case 1:
+			case 1:// Rechts
 				System.out.println("Case: 1");
 				motor.drehenAufDerStelle(90);
+				wandGefunden = true;
+				try {
+					messeAbstand();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				break;
 
-			case 2:
+			case 2:// Geradeaus
 				System.out.println("Case: 2");
 				motor.fahreGerade(1);
 				break;
@@ -147,7 +167,7 @@ public class Robot {
 		motor.drehenAufDerStelle(grad);
 	}
 
-	public void findeWand() {
+	public void findeZiel() {
 		try {
 			// sucheRichtungWand();
 			fahreZuWand();
