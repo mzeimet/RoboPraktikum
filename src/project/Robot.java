@@ -18,15 +18,10 @@ public class Robot {
 	private CommunicationManager Brain;
 	private LinkedList<Integer> memory = new LinkedList<Integer>();
 
-	private Lichtsensor lichtSensorLinks;
-	private Lichtsensor lichtSensorRechts;
-	private InfrarotSensor infrarotSensor;
-
-	public Robot(Port rechterMotorPort, Port linkerMotorPort) {
-		// this.lichtSensorLinks = new Lichtsensor(lichtPortLinks);
-		// this.lichtSensorRechts = new Lichtsensor(lichtPortRechts);
-		// hier kommt Marvins verrückter Algorithmus hin
-	}
+	private Lichtsensor lichtSensor;
+	
+	private InfrarotSensor infrarotSensorVorne;
+	private InfrarotSensor infrarotSensorHinten;
 
 	private UltraschallSensor ultraschallSensor;
 
@@ -48,21 +43,19 @@ public class Robot {
 
 	private boolean zielGefunden = false;
 
-	public Robot(String usPort, String irPort, Port miniMotorPort, Port linkerMotorPort, Port rechterMotorPort) {
+	public Robot(String usPort, String irPortVorne, String irPortHinten, Port miniMotorPort, Port linkerMotorPort, Port rechterMotorPort, String lichtPort) {
 		this.ultraschallSensor = new UltraschallSensor(usPort);
 		this.minimotor = new MiniMotor(miniMotorPort);
 		this.motor = new project.motors.Motor(linkerMotorPort, rechterMotorPort);
-		this.infrarotSensor = new InfrarotSensor(irPort);
+		this.infrarotSensorVorne = new InfrarotSensor(irPortVorne);
+		this.infrarotSensorHinten = new InfrarotSensor(irPortHinten);
+		this.lichtSensor = new Lichtsensor(lichtPort);
 		Brain = new CommunicationManager();
 	}
 
 	public void dreheInfrarotSensor(Direction richtung) {
 		minimotor.drehe(richtung);
 	}
-
-	// public Robot(String irPortNummer) {
-	// this.infrarotSensor = new InfrarotSensor(irPortNummer);
-	// }
 
 	public void steheStill() {
 		motor.setGeschwindigkeit(0);
@@ -325,10 +318,6 @@ public class Robot {
 
 	public void drehenAufDerStelle() {
 		motor.drehenAufDerStelle(-90);
-	}
-
-	public float messeInfrarot() {
-		return infrarotSensor.messeAbstand();
 	}
 
 }

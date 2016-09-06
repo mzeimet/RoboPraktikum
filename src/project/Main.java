@@ -9,16 +9,18 @@ import static project.Direction.*;
 
 public class Main {
 
-	public static final String LICHT_PORT_LINKS = "S1";
-	public static final String LICHT_PORT_RECHTS = "S4";
-
-	public static final String IR_PORT = "S3";
-
+	public static final String LICHT_PORT = "S1";
+	
 	public static final String US_PORT = "S2";
-
+	
+	public static final String IR_PORT_VORNE = "S3";
+	public static final String IR_PORT_HINTEN = "S4";
+	
+	public static final Port MINI_MOTOR_PORT = MotorPort.A;
+	
 	public static final Port LINKER_MOTOR_PORT = MotorPort.B;
 	public static final Port RECHTER_MOTOR_PORT = MotorPort.C;
-	public static final Port MINI_MOTOR_PORT = MotorPort.A;
+	
 
 	public static final int SCHWELLWERT_STOP = 80;
 	private static final int START_SPEED = 30;
@@ -28,17 +30,11 @@ public class Main {
 	}
 
 	private void run() {
-		Robot robot = new Robot(US_PORT, IR_PORT, MINI_MOTOR_PORT, LINKER_MOTOR_PORT, RECHTER_MOTOR_PORT);
+		Robot robot = new Robot(US_PORT, IR_PORT_VORNE, IR_PORT_HINTEN, MINI_MOTOR_PORT, LINKER_MOTOR_PORT, RECHTER_MOTOR_PORT, LICHT_PORT);
 		LinkedList<Integer> memory = robot.getBrain().start(robot.getMemory());
 
 		Sound.beep();
 		robot.findeWand();
-//		while(true){
-//			robot.checkeHindernisInfrarot(Direction.RIGHT);
-//			System.out.println(robot.messeInfrarot());
-//			System.out.println(robot.messeAbstand());
-//		}
-
 
 	}
 
