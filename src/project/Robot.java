@@ -40,6 +40,7 @@ public class Robot {
 	private static final double KONSTANTE_RAD_UMFANG = 5.6f * 3.1415926;
 	private static final int ABSTAND_IR_SENSOREN = 0; // TODO
 	private static final int TOLERANZ_DIFF_IR = 2;
+	private static final double CM_UM_KURVE = 5;
 
 	private float letzterAbstand;
 
@@ -118,39 +119,36 @@ public class Robot {
 		try {
 			fahreZuWand();
 			dreheZuWand();
-			try {
-				letzterAbstand = messeAbstand();
-			} catch (Exception e) {
-			}
 			while (!zielGefunden) {
 				folgeWand();
-				if (!checkeHindernisInfrarot(LEFT)) {
+				if (!checkeHindernisInfrarot()) {
 					// links frei
 					motor.setGeschwindigkeit(30);
-					motor.fahreGerade(4);
-					steheStill();
+					motor.fahreGerade(CM_UM_KURVE);
 					drehe(LEFT);
 					motor.setGeschwindigkeit(30);
-					motor.fahreGerade(4);
-					steheStill();
-				} else { // links hinderniss
-					if (checkeHindernisInfrarot(RIGHT)) {
-						// sackgasse
-						drehe(RIGHT);
-						drehe(RIGHT);
-					} else {
-						drehe(Direction.RIGHT);
-					}
+					motor.fahreGerade(CM_UM_KURVE);
+				} else { // links hinderniss, sackgasse nicht möglich
+					drehe(Direction.RIGHT);
 				}
 			}
+			
+		machePlatz();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
+	
+	/**
+	 * Macht Platz damit der dumme ihn nicht rammt
+	 */
+	private void machePlatz() {
+		motor.fahreGerade(15);
+		
+	}
 
 	private void dreheZuWand() {
 		int gradBeiMin = 0;
-		minimotor.dreheZurueck();
 		float min = Float.MAX_VALUE;
 		for (int aktGradZahl = -minimotor.getMaxGradzahl(); aktGradZahl <= minimotor
 				.getMaxGradzahl(); aktGradZahl += INTERVALL_GROESSE_IR_MESSUNG) {
@@ -164,6 +162,7 @@ public class Robot {
 		minimotor.dreheZurueck();
 		motor.drehenAufDerStelle(gradBeiMin);
 		drehe(RIGHT);
+		minimotor.drehe(LEFT);
 	}
 
 	/**
@@ -172,25 +171,16 @@ public class Robot {
 	 */
 	public void folgeWand() {
 		int tachoCount = motor.getTachoCount();
-		boolean linksKeineWand = false;
-		boolean stehtVorHinderniss = false;
-		boolean darfFahren = true;
-		linksKeineWand = !checkeHindernisInfrarot(LEFT);
-		stehtVorHinderniss = checkeHindernisUltraschall();
-		if (stehtVorHinderniss) {
-			stehtVorHinderniss = pruefeUltraschallMitInfrarot();
-		}
-		darfFahren = !linksKeineWand && !stehtVorHinderniss;
+		boolean linksKeineWand = !checkeHindernisInfrarot();
+		boolean stehtVorHinderniss = checkeHindernisUltraschall();
+		boolean darfFahren = !linksKeineWand && !stehtVorHinderniss;
 		if (darfFahren) {
 			letzterAbstand = messeAbstand(0);
 			fahre();
 		}
 		while (darfFahren) {
-			linksKeineWand = !checkeHindernisInfrarot(LEFT);
+			linksKeineWand = !checkeHindernisInfrarot();
 			stehtVorHinderniss = checkeHindernisUltraschall();
-			if (stehtVorHinderniss) {
-				stehtVorHinderniss = pruefeUltraschallMitInfrarot();
-			}
 			darfFahren = !linksKeineWand && !stehtVorHinderniss && abstandStimmt();
 		}
 		motor.stop();
@@ -198,23 +188,23 @@ public class Robot {
 		SaveMove(tachoCount);
 	}
 
+	/**
+	 * Testet ob der Abstand insgesamt stimmt, und ob die differenz zwischen den
+	 * ir sensoren nicht zu groß geworden ist
+	 * 
+	 * @return true falls noch alles stimmt
+	 */
 	private boolean abstandStimmt() {
 		if (Math.abs(messeAbstand(0) - letzterAbstand) > MAGISCHE_TOLERANZ_KONSTANTE) {
-			int diff = Math.abs(messeAbstand(0) - messeAbstand(1)) - ABSTAND_IR_SENSOREN;
-			if (diff > TOLERANZ_DIFF_IR) {
-				return false;
-			}
+			// abstand zur wand zu klein
+			return false;
+		}
+		float diff = Math.abs(messeAbstand(0) - messeAbstand(1)) - ABSTAND_IR_SENSOREN;
+		if (diff > TOLERANZ_DIFF_IR) {
+			// roboter schief
+			return false;
 		}
 		return true;
-	}
-
-	/**
-	 * Prueft ob der US-sensor richtige werte liefert, noch zu impelenieren TODO
-	 * 
-	 * @return
-	 */
-	private boolean pruefeUltraschallMitInfrarot() {
-		return checkeHindernisInfrarot(FORWARD);
 	}
 
 	public void fahre() {
@@ -223,7 +213,7 @@ public class Robot {
 	}
 
 	/**
-	 * Misst den Abstand des IR-Sensors zum nächstmöglichen Objekt
+	 * Misst den Abstand des vorderen IR-Sensors zum nächstmöglichen Objekt
 	 * 
 	 * @return
 	 * @throws Exception:
@@ -231,7 +221,7 @@ public class Robot {
 	 *             miniMotor.MAX_GRADZAHL) gemessen, d.h. korrektheit des wertes
 	 *             ist nicht mehr garantiert
 	 */
-	public float messeAbstand() throws Exception {
+	public float messeAbstandKreis() throws Exception {
 		float min = Float.MAX_VALUE;
 		boolean groessterWinkel = true;
 		for (int aktGradZahl = -minimotor
@@ -240,7 +230,7 @@ public class Robot {
 													 * .getMaxGradzahl()
 													 */; aktGradZahl += INTERVALL_GROESSE_IR_MESSUNG) {
 			minimotor.drehe(aktGradZahl);
-			float abstand = infrarotSensor.messeAbstand();
+			float abstand = infrarotSensorVorne.messeAbstand();
 			if (abstand < min) {
 				min = abstand;
 				if (Math.abs(aktGradZahl) < minimotor.getMaxGradzahl()) {
@@ -251,6 +241,18 @@ public class Robot {
 		minimotor.dreheZurueck();
 
 		return min;
+	}
+
+	private float messeAbstand(int i) {
+		if (i == 0) {
+			// vorne
+			return infrarotSensorVorne.messeAbstand();
+		} else if (i == 1) {
+			// hinten
+			return infrarotSensorHinten.messeAbstand();
+		} else {
+			throw new IllegalArgumentException();
+		}
 	}
 
 	/**
@@ -268,7 +270,7 @@ public class Robot {
 	private void korregiereAbstand() {
 		float aktuellerAbstand = 0;
 		try {
-			aktuellerAbstand = messeAbstand();
+			aktuellerAbstand = messeAbstand(0);
 		} catch (Exception e) {
 			motor.drehenAufDerStelle(-20);
 			korregiereAbstand();
@@ -292,18 +294,17 @@ public class Robot {
 	private void fahreZuWand() {
 		motor.setGeschwindigkeit(30);
 		boolean nichtErreicht = getUltraschallAbstand() > GRENZWERT_ABSTAND_WAND_FAHREN;
+		int tachoCountVorher = motor.getTachoCount();
+		motor.fahreGerade();
 		while (nichtErreicht) {
-			SaveMove(FORWARD);
-			motor.fahreGerade(1);
 			nichtErreicht = getUltraschallAbstand() > GRENZWERT_ABSTAND_WAND_FAHREN;
 		}
-		steheStill();
+		motor.stop();
+		SaveMove(motor.getTachoCount() - tachoCountVorher);
 	}
 
-	public boolean checkeHindernisInfrarot(Direction richtung) {
-		minimotor.drehe(richtung);
-		boolean hasHindernis = infrarotSensor.checktHinderniss();
-		minimotor.drehe(FORWARD);
+	public boolean checkeHindernisInfrarot() {
+		boolean hasHindernis = infrarotSensorVorne.checktHinderniss();
 		return hasHindernis;
 	}
 
