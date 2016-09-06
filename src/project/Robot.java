@@ -1,6 +1,5 @@
 package project;
 
-import static project.Direction.FORWARD;
 import static project.Direction.LEFT;
 import static project.Direction.RIGHT;
 
@@ -132,19 +131,19 @@ public class Robot {
 					drehe(Direction.RIGHT);
 				}
 			}
-			
-		machePlatz();
+
+			machePlatz();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * Macht Platz damit der dumme ihn nicht rammt
 	 */
 	private void machePlatz() {
 		motor.fahreGerade(15);
-		
+
 	}
 
 	private void dreheZuWand() {
@@ -181,7 +180,8 @@ public class Robot {
 		while (darfFahren) {
 			linksKeineWand = !checkeHindernisInfrarot();
 			stehtVorHinderniss = checkeHindernisUltraschall();
-			darfFahren = !linksKeineWand && !stehtVorHinderniss && abstandStimmt();
+			korregiereAbstand();
+			darfFahren = !linksKeineWand && !stehtVorHinderniss && pruefeUndKorrigiere();
 		}
 		motor.stop();
 		tachoCount = motor.getTachoCount() - tachoCount; // TODO
@@ -194,16 +194,21 @@ public class Robot {
 	 * 
 	 * @return true falls noch alles stimmt
 	 */
-	private boolean abstandStimmt() {
-		if (Math.abs(messeAbstand(0) - letzterAbstand) > MAGISCHE_TOLERANZ_KONSTANTE) {
-			// abstand zur wand zu klein
-			return false;
-		}
-		float diff = Math.abs(messeAbstand(0) - messeAbstand(1)) - ABSTAND_IR_SENSOREN;
+	private boolean pruefeUndKorrigiere() {
+		float abstandVorne = messeAbstand(0);
+		float abstandHinten = messeAbstand(1);
+		float diff = abstandVorne - abstandHinten;
+
 		if (diff > TOLERANZ_DIFF_IR) {
-			// roboter schief
-			return false;
+			motor.setGeschwindigkeitSpezifisch(END_WERT + diff * 2, Direction.RIGHT);
+			motor.setGeschwindigkeitSpezifisch(END_WERT, Direction.LEFT);
+		} else {
+			if (diff < 0 && Math.abs(diff) > TOLERANZ_DIFF_IR) {
+				motor.setGeschwindigkeitSpezifisch(END_WERT + Math.abs(diff) * 2, Direction.LEFT);
+				motor.setGeschwindigkeitSpezifisch(END_WERT, Direction.RIGHT);
+			}
 		}
+
 		return true;
 	}
 
@@ -224,8 +229,8 @@ public class Robot {
 	public float messeAbstandKreis() throws Exception {
 		float min = Float.MAX_VALUE;
 		boolean groessterWinkel = true;
-		for (int aktGradZahl = -minimotor
-				.getMaxGradzahl(); aktGradZahl <= minimotor.getMaxGradzahl(); aktGradZahl += INTERVALL_GROESSE_IR_MESSUNG) {
+		for (int aktGradZahl = -minimotor.getMaxGradzahl(); aktGradZahl <= minimotor
+				.getMaxGradzahl(); aktGradZahl += INTERVALL_GROESSE_IR_MESSUNG) {
 			minimotor.drehe(aktGradZahl);
 			float abstand = infrarotSensorVorne.messeAbstand();
 			if (abstand < min) {
@@ -266,13 +271,7 @@ public class Robot {
 
 	private void korregiereAbstand() {
 		float aktuellerAbstand = 0;
-		try {
-			aktuellerAbstand = messeAbstand(0);
-		} catch (Exception e) {
-			motor.drehenAufDerStelle(-20);
-			korregiereAbstand();
-			return;
-		}
+		aktuellerAbstand = messeAbstand(0);
 
 		if (letzterAbstand < aktuellerAbstand + MAGISCHE_TOLERANZ_KONSTANTE
 				&& letzterAbstand > aktuellerAbstand - MAGISCHE_TOLERANZ_KONSTANTE)

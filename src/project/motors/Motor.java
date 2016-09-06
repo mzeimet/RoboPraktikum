@@ -32,24 +32,33 @@ public class Motor {
 		motorLinks.startSynchronization();
 
 		DriveSmooth();
-		motorLinks.forward();
 
 		motorLinks.endSynchronization();
 
 		motorLinks.waitComplete();
 		motorRechts.waitComplete();
 	}
-	
+
 	public void stop() {
 		motorLinks.flt();
 	}
 
 	private void DriveSmooth() {
-		motorLinks.rotate(90, true);
-		motorRechts.rotate(90, true);
+		int geschwindigkeit = 0;
+		motorLinks.setSpeed(geschwindigkeit);
+		motorRechts.setSpeed(geschwindigkeit);
+
+		motorLinks.forward();
+		motorRechts.forward();
+
+		while (geschwindigkeit < END_WERT) {
+			geschwindigkeit++;
+			motorLinks.setSpeed(geschwindigkeit);
+			motorRechts.setSpeed(geschwindigkeit);
+		}
 	}
 
-	private void setGeschwindigkeitSpezifisch(int percent, Direction lr) {
+	public void setGeschwindigkeitSpezifisch(int percent, Direction lr) {
 		percent = validateOrCorrectPercent(percent);
 		if (lr.equals(LEFT)) {
 			motorLinks.setSpeed(percent * TOP_SPEED / 100);
@@ -148,7 +157,7 @@ public class Motor {
 		motorRechts.waitComplete();
 
 	}
-	
+
 	public int getTachoCount() {
 		return motorLinks.getTachoCount();
 	}
