@@ -35,6 +35,9 @@ public class Main {
 
 		Sound.beep();
 		robot.findeWand();
+		Sound.beep();
+		Sound.beep();
+		Sound.beep();
 
 	}
 
