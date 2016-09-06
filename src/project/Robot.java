@@ -120,17 +120,20 @@ public class Robot {
 			// sucheRichtungWand();
 			fahreZuWand();
 			dreheZuWand();
-			letzterAbstand = messeAbstand();
+			try {
+				letzterAbstand = messeAbstand();
+			} catch (Exception e) {
+			}
 			while (!zielGefunden) {
 				folgeWand();
 				if (!checkeHindernisInfrarot(LEFT)) {
 					// links frei
 					motor.setGeschwindigkeit(30);
-					motor.fahreGerade(3);
+					motor.fahreGerade(4);
 					steheStill();
 					drehe(LEFT);
 					motor.setGeschwindigkeit(30);
-					motor.fahreGerade(3);
+					motor.fahreGerade(4);
 					steheStill();
 				} else { // links hinderniss
 					if (checkeHindernisInfrarot(RIGHT)) {
@@ -218,8 +221,11 @@ public class Robot {
 	public float messeAbstand() throws Exception {
 		float min = Float.MAX_VALUE;
 		boolean groessterWinkel = true;
-		for (int aktGradZahl = -minimotor.getMaxGradzahl(); aktGradZahl <= minimotor
-				.getMaxGradzahl(); aktGradZahl += INTERVALL_GROESSE_IR_MESSUNG) {
+		for (int aktGradZahl = -minimotor
+				.getMaxGradzahl(); aktGradZahl <= 0 /*
+													 * minimotor
+													 * .getMaxGradzahl()
+													 */; aktGradZahl += INTERVALL_GROESSE_IR_MESSUNG) {
 			minimotor.drehe(aktGradZahl);
 			float abstand = infrarotSensor.messeAbstand();
 			if (abstand < min) {
@@ -230,9 +236,7 @@ public class Robot {
 			}
 		}
 		minimotor.dreheZurueck();
-		if (groessterWinkel) {
-			throw new Exception();
-		}
+
 		return min;
 	}
 
