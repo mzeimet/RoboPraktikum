@@ -61,10 +61,6 @@ public class Robot {
 		minimotor.drehe(richtung);
 	}
 
-	public void steheStill() {
-		motor.setGeschwindigkeit(0);
-	}
-
 	private void drehe(Direction richtung) {
 		if (richtung.equals(RIGHT)) {
 			SaveMove(1);
@@ -123,10 +119,8 @@ public class Robot {
 				folgeWand();
 				if (!checkeHindernisInfrarot()) {
 					// links frei
-					motor.setGeschwindigkeit(30);
 					motor.fahreGerade(CM_UM_KURVE);
 					drehe(LEFT);
-					motor.setGeschwindigkeit(30);
 					motor.fahreGerade(CM_UM_KURVE);
 				} else { // links hinderniss, sackgasse nicht möglich
 					drehe(Direction.RIGHT);
@@ -208,7 +202,6 @@ public class Robot {
 	}
 
 	public void fahre() {
-		motor.setGeschwindigkeit(30);
 		motor.fahreGerade();
 	}
 
@@ -289,7 +282,6 @@ public class Robot {
 	}
 
 	private void fahreZuWand() {
-		motor.setGeschwindigkeit(30);
 		boolean nichtErreicht = getUltraschallAbstand() > GRENZWERT_ABSTAND_WAND_FAHREN;
 		int tachoCountVorher = motor.getTachoCount();
 		motor.fahreGerade();
