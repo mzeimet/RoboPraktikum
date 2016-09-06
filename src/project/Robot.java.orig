@@ -1,12 +1,13 @@
 package project;
 
+<<<<<<< HEAD
+import java.util.LinkedList;
+=======
 import static project.Direction.FORWARD;
 import static project.Direction.LEFT;
 import static project.Direction.RIGHT;
+>>>>>>> MarvinsSpielwiese
 
-import java.util.LinkedList;
-
-import lejos.hardware.Sound;
 import lejos.hardware.port.Port;
 import project.motors.MiniMotor;
 import project.motors.Motor;
@@ -21,11 +22,19 @@ public class Robot {
 
 	private Lichtsensor lichtSensorLinks;
 	private Lichtsensor lichtSensorRechts;
-
 	private InfrarotSensor infrarotSensor;
 	private UltaschallSensor ultraschallSensor;
 
 	private Motor motor;
+<<<<<<< HEAD
+
+	public Robot(Port rechterMotorPort, Port linkerMotorPort) {
+		// this.lichtSensorLinks = new Lichtsensor(lichtPortLinks);
+		// this.lichtSensorRechts = new Lichtsensor(lichtPortRechts);
+		this.motor = new project.motors.Motor(linkerMotorPort, rechterMotorPort);
+		Brain = new CommunicationManager();
+		// hier kommt Marvins verrückter Algorithmus hin
+=======
 	private MiniMotor minimotor;
 
 	private static final int GRENZWERT_ABSTAND_WAND_SUCHEN = 50;
@@ -43,13 +52,12 @@ public class Robot {
 
 	private boolean zielGefunden = false;
 
-	public Robot(Port rechterMotorPort, Port linkerMotorPort) {
-		// this.lichtSensorLinks = new Lichtsensor(lichtPortLinks);
-		// this.lichtSensorRechts = new Lichtsensor(lichtPortRechts);
+	public Robot(String lichtPortLinks, String lichtPortRechts, Port linkerMotorPort, Port rechterMotorPort) {
+		this.lichtSensorLinks = new Lichtsensor(lichtPortLinks);
+		this.lichtSensorRechts = new Lichtsensor(lichtPortRechts);
 		this.motor = new project.motors.Motor(linkerMotorPort, rechterMotorPort);
-		Brain = new CommunicationManager();
-		// hier kommt Marvins verrückter Algorithmus hin
 	}
+>>>>>>> MarvinsSpielwiese
 
 	public Robot(String usPort, String irPort, Port miniMotorPort, Port linkerMotorPort, Port rechterMotorPort) {
 		this.ultraschallSensor = new UltaschallSensor(usPort);
@@ -58,11 +66,10 @@ public class Robot {
 		this.infrarotSensor = new InfrarotSensor(irPort);
 	}
 
-	public void dreheInfrarotSensor(Direction richtung) {
-		minimotor.drehe(richtung);
-
-	}
-
+<<<<<<< HEAD
+	/*
+	 * Folgt stupide den Schritten des vorherigen Robots
+	 */
 	public void doWhatLemmingsDo(LinkedList<Integer> memory) {
 		System.out.println(getMemory().size());
 
@@ -72,24 +79,29 @@ public class Robot {
 			switch (getMemory().getFirst()) {
 			case 0:
 				System.out.println("Case: 0");
-				motor.drehenAufDerStelle(-90);
+				motor.fahreGerade();
 				break;
 			case 1:
 				System.out.println("Case: 1");
-				motor.drehenAufDerStelle(90);
+				motor.turnLeft();
 				break;
 
 			case 2:
 				System.out.println("Case: 2");
-				motor.fahreGerade(1);
+				motor.turnRight();
 				break;
 
 			default:
 				System.out.println("Case: else");
-				Sound.beep();
 				break;
 			}
 		}
+=======
+	public void dreheInfrarotSensor(Direction richtung) {
+		minimotor.drehe(richtung);
+	}
+>>>>>>> MarvinsSpielwiese
+
 	}
 
 	// public Robot(String irPortNummer) {
@@ -109,6 +121,12 @@ public class Robot {
 		return ultraschallSensor.getAbstandInCm();
 	}
 
+	private void SaveMove(Direction right) {
+		// Just save the Direction to send it later
+
+	}
+
+<<<<<<< HEAD
 	private void SaveMove(Direction dir) {
 		switch (dir) {
 		case FORWARD:
@@ -141,8 +159,7 @@ public class Robot {
 
 	public void setBrain(CommunicationManager brain) {
 		Brain = brain;
-	}
-
+=======
 	public void drehe(int grad) {
 		motor.drehenAufDerStelle(grad);
 	}
@@ -355,6 +372,7 @@ public class Robot {
 
 	public float messeInfrarot() {
 		return infrarotSensor.messeAbstand();
+>>>>>>> MarvinsSpielwiese
 	}
 
 }
