@@ -1,29 +1,13 @@
 package project;
 
 import java.util.LinkedList;
-
+import static project.Config.*;
 import lejos.hardware.Sound;
 import lejos.hardware.port.MotorPort;
 import lejos.hardware.port.Port;
 import static project.Direction.*;
 
 public class Main {
-
-	public static final String LICHT_PORT = "S1";
-	
-	public static final String US_PORT = "S2";
-	
-	public static final String IR_PORT_VORNE = "S3";
-	public static final String IR_PORT_HINTEN = "S4";
-	
-	public static final Port MINI_MOTOR_PORT = MotorPort.A;
-	
-	public static final Port LINKER_MOTOR_PORT = MotorPort.B;
-	public static final Port RECHTER_MOTOR_PORT = MotorPort.C;
-	
-
-	public static final int SCHWELLWERT_STOP = 80;
-	private static final int START_SPEED = 30;
 
 	public static void main(String[] args) {
 		new Main().run();
