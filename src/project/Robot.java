@@ -6,7 +6,6 @@ import static project.Direction.RIGHT;
 
 import java.util.LinkedList;
 
-import lejos.hardware.Sound;
 import lejos.hardware.port.Port;
 import project.motors.MiniMotor;
 import project.motors.Motor;
@@ -44,33 +43,14 @@ public class Robot {
 	private boolean zielGefunden = false;
 
 	public Robot(Port rechterMotorPort, Port linkerMotorPort) {
-		// this.lichtSensorLinks = new Lichtsensor(lichtPortLinks);
-		// this.lichtSensorRechts = new Lichtsensor(lichtPortRechts);
 		this.motor = new project.motors.Motor(linkerMotorPort, rechterMotorPort);
 		Brain = new CommunicationManager();
-		// hier kommt Marvins verrückter Algorithmus hin
-	}
-
-	public Robot(String usPort, String irPort, Port miniMotorPort, Port linkerMotorPort, Port rechterMotorPort) {
-		this.ultraschallSensor = new UltaschallSensor(usPort);
-		this.minimotor = new MiniMotor(miniMotorPort);
-		this.motor = new project.motors.Motor(linkerMotorPort, rechterMotorPort);
-		this.infrarotSensor = new InfrarotSensor(irPort);
-	}
-
-	public void dreheInfrarotSensor(Direction richtung) {
-		minimotor.drehe(richtung);
-
 	}
 
 	public void doWhatLemmingsDo(LinkedList<Integer> memory) {
 		System.out.println(getMemory().size());
-		boolean wandGefunden = false;
 
 		for (int i = 0; i < getMemory().size(); i++) {
-
-			if (wandGefunden)
-				korregiereAbstand();
 
 			System.out.println(getMemory().getFirst());
 			getMemory().removeFirst();
@@ -80,33 +60,14 @@ public class Robot {
 				motor.fahreGerade(3);
 				motor.drehenAufDerStelle(-90);
 				motor.fahreGerade(3);
-				try {
-					letzterAbstand = messeAbstand();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
 				break;
 			case 1:// Rechts
 				System.out.println("Case: 1");
 				motor.drehenAufDerStelle(90);
-				wandGefunden = true;
-				try {
-					messeAbstand();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
-
-			case 2:// Geradeaus
-				System.out.println("Case: 2");
-				motor.fahreGerade(1);
-				break;
 
 			default:
-				System.out.println("Case: else");
-				Sound.beep();
+
+				motor.driveTachoCount(memory.get(i));
 				break;
 			}
 		}
