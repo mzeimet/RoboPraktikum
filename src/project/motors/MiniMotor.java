@@ -5,7 +5,7 @@ import static project.Direction.FORWARD;
 import lejos.hardware.motor.EV3MediumRegulatedMotor;
 import lejos.hardware.port.Port;
 import project.Direction;
-
+import static project.Config.*;
 /**
  * Dreht entweder um 90 Grad nach Links oder Rechts, jedoch nur abwechselnd
  */

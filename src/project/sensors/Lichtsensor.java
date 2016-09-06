@@ -3,10 +3,9 @@ package project.sensors;
 import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.port.Port;
 import lejos.hardware.sensor.NXTLightSensor;
+import static project.Config.*;
 
 public class Lichtsensor {
-
-	private static final String AMBIENT_MODE = "Ambient";
 
 	private NXTLightSensor sensor;
 

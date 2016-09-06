@@ -7,16 +7,8 @@ import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.hardware.port.Port;
 import lejos.robotics.RegulatedMotor;
 import project.Direction;
-
+import static project.Config.*;
 public class Motor {
-
-	private static final int TOP_SPEED = 740;
-	private static final double RADABSTAND = 12.2;
-	private static final double RADDURCHMESSER = 6;
-	private static final double BODENFAKTOR = 1; // je schlechter der Boden,
-													// desto hoeher der Faktor
-
-	private static final int GRAD_FUER_DREHUNG = 380;
 
 	private EV3LargeRegulatedMotor motorLinks;
 	private EV3LargeRegulatedMotor motorRechts;

@@ -12,6 +12,7 @@ import project.motors.Motor;
 import project.sensors.InfrarotSensor;
 import project.sensors.Lichtsensor;
 import project.sensors.UltraschallSensor;
+import static project.Config.*;
 
 public class Robot {
 
@@ -27,20 +28,6 @@ public class Robot {
 
 	private Motor motor;
 	private MiniMotor minimotor;
-
-	private static final int GRENZWERT_ABSTAND_WAND_SUCHEN = 50;
-	private static final String FEHLER_KEINE_WAND = "404 Wand nicht gefunden :(";
-	private static final float GRENZWERT_ABSTAND_WAND_FAHREN = 5;
-	private static final float FELDLAENGE = 12;
-	private static final float GRENZWERT_ABWEICHUNG_IR = 1f;
-	private static final int INTERVALL_GROESSE_IR_MESSUNG = 10;
-
-	private static final float FAHRE_GERADE_DISTANZ = 5f;
-	private static final int MAGISCHE_TOLERANZ_KONSTANTE = 1;
-	private static final double KONSTANTE_RAD_UMFANG = 5.6f * 3.1415926;
-	private static final int ABSTAND_IR_SENSOREN = 0; // TODO
-	private static final int TOLERANZ_DIFF_IR = 2;
-	private static final double CM_UM_KURVE = 5;
 
 	private float letzterAbstand;
 
