@@ -4,11 +4,11 @@ import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.port.Port;
 import lejos.hardware.sensor.EV3UltrasonicSensor;
 
-public class UltaschallSensor {
+public class UltraschallSensor {
 
 	private EV3UltrasonicSensor sensor;
 
-	public UltaschallSensor(String usPortNummer) {
+	public UltraschallSensor(String usPortNummer) {
 		Port port = LocalEV3.get().getPort(usPortNummer);
 		this.sensor = new EV3UltrasonicSensor(port);
 		sensor.getDistanceMode();
