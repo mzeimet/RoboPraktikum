@@ -35,7 +35,8 @@ public class Robot {
 	private Motor motor;
 	private MiniMotor minimotor;
 
-	private float letzterAbstand;
+	private float vergleichsAbstandVorne;
+	private float vergleichsAbstandHinten;
 	private boolean zielGefunden = false;
 
 	public Robot(String usPort, String irPortVorne, String irPortHinten, Port miniMotorPort, Port linkerMotorPort,
@@ -149,8 +150,8 @@ public class Robot {
 		boolean stehtVorHinderniss = checkeHindernisUltraschall();
 		boolean darfFahren = !linksKeineWand && !stehtVorHinderniss;
 		if (darfFahren) {
-			letzterAbstand = messeAbstand(IR_SENSOR_VORNE);
-			float bla = messeAbstand(IR_SENSOR_HINTEN);
+			vergleichsAbstandVorne = messeAbstand(IR_SENSOR_VORNE);
+			vergleichsAbstandHinten = messeAbstand(IR_SENSOR_HINTEN);
 			fahre();
 		}
 		while (darfFahren) {
@@ -158,11 +159,24 @@ public class Robot {
 			stehtVorHinderniss = checkeHindernisUltraschall();
 			darfFahren = !linksKeineWand && !stehtVorHinderniss;
 			System.out.println("Koorektur Beginn");
-			pruefeUndKorrigiere();
+			neueKorrektur();
 		}
 		motor.stop();
 		tachoCount = motor.getTachoCount() - tachoCount; // TODO
 		SaveMove(tachoCount);
+	}
+
+	private void neueKorrektur() {
+		float abstandVorne = messeAbstand(IR_SENSOR_VORNE);
+		float abstandHinten = messeAbstand(IR_SENSOR_HINTEN);
+		float diffVorne = abstandVorne - vergleichsAbstandVorne;
+		float diffHinten = abstandHinten - vergleichsAbstandHinten;
+
+		motor.setGeschwindigkeitSpezifisch(START_SPEED + diffVorne, Direction.RIGHT);
+		motor.setGeschwindigkeitSpezifisch(START_SPEED - diffVorne, Direction.LEFT);
+
+		motor.forward();
+		System.out.println("Ende Korrektur");
 	}
 
 	private void korregiereAbstand(float differenz) {
@@ -185,8 +199,8 @@ public class Robot {
 		float abstandHinten = messeAbstand(IR_SENSOR_HINTEN);
 		float diff = (abstandVorne - ABSTAND_IR_SENSOREN) - abstandHinten;
 
-		if (letzterAbstand + MAGISCHE_TOLERANZ_KONSTANTE < abstandVorne
-				|| letzterAbstand - MAGISCHE_TOLERANZ_KONSTANTE > abstandVorne) {
+		if (vergleichsAbstandVorne + MAGISCHE_TOLERANZ_KONSTANTE < abstandVorne
+				|| vergleichsAbstandVorne - MAGISCHE_TOLERANZ_KONSTANTE > abstandVorne) {
 			System.out.println("Koorektur Abstand zur Wand");
 			korregiereAbstand(diff);
 			return true;
