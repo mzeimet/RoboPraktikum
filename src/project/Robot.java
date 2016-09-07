@@ -2,9 +2,11 @@ package project;
 
 import static project.Config.ABSTAND_IR_SENSOREN;
 import static project.Config.CM_UM_KURVE;
-import static project.Config.FAHRE_GERADE_DISTANZ;
 import static project.Config.GRENZWERT_ABSTAND_WAND_FAHREN;
 import static project.Config.INTERVALL_GROESSE_IR_MESSUNG;
+import static project.Config.IR_SENSOR_HINTEN;
+import static project.Config.IR_SENSOR_VORNE;
+import static project.Config.KONSTANTE_RAD_UMFANG;
 import static project.Config.MAGISCHE_TOLERANZ_KONSTANTE;
 import static project.Config.START_SPEED;
 import static project.Config.TOLERANZ_DIFF_IR;
@@ -26,17 +28,14 @@ public class Robot {
 	private LinkedList<Integer> memory = new LinkedList<Integer>();
 
 	private Lichtsensor lichtSensor;
-
 	private InfrarotSensor infrarotSensorVorne;
 	private InfrarotSensor infrarotSensorHinten;
-
 	private UltraschallSensor ultraschallSensor;
 
 	private Motor motor;
 	private MiniMotor minimotor;
 
 	private float letzterAbstand;
-
 	private boolean zielGefunden = false;
 
 	public Robot(String usPort, String irPortVorne, String irPortHinten, Port miniMotorPort, Port linkerMotorPort,
@@ -78,7 +77,7 @@ public class Robot {
 			getMemory().addFirst(2);
 			break;
 		default: // FORWARD
-			// tanze im Kreis und singe ein lied TODO Steven
+			getMemory().addFirst(dir);
 			break;
 		}
 
@@ -88,26 +87,14 @@ public class Robot {
 		return memory;
 	}
 
-	public void setMemory(LinkedList<Integer> memory) {
-		this.memory = memory;
-	}
-
 	public CommunicationManager getBrain() {
 		return Brain;
 	}
 
-	public void setBrain(CommunicationManager brain) {
-		Brain = brain;
-	}
-
-	public void drehe(int grad) {
-		motor.drehenAufDerStelle(grad);
-	}
-
 	public void findeWand() {
 		try {
-			fahreZuWand();
-			dreheZuWand();
+			// fahreZuWand();
+			// dreheZuWand();
 			while (!zielGefunden) {
 				folgeWand();
 				if (!checkeHindernisInfrarot()) {
@@ -162,8 +149,8 @@ public class Robot {
 		boolean stehtVorHinderniss = checkeHindernisUltraschall();
 		boolean darfFahren = !linksKeineWand && !stehtVorHinderniss;
 		if (darfFahren) {
-			letzterAbstand = messeAbstand(0);
-			float bla = messeAbstand(1);
+			letzterAbstand = messeAbstand(IR_SENSOR_VORNE);
+			float bla = messeAbstand(IR_SENSOR_HINTEN);
 			fahre();
 		}
 		while (darfFahren) {
@@ -178,9 +165,11 @@ public class Robot {
 		SaveMove(tachoCount);
 	}
 
-	private void korregiereAbstand(float abstandVorne) {
+	private void korregiereAbstand(float differenz) {
 
-		System.out.println("Shit");
+		motor.drehenAufDerStelle(-90);
+		motor.fahreGerade((double) -differenz / KONSTANTE_RAD_UMFANG);
+		motor.drehenAufDerStelle(90);
 
 	}
 
@@ -192,17 +181,16 @@ public class Robot {
 	 */
 	private boolean pruefeUndKorrigiere() {
 		System.out.println("Start Korrektur");
-		float abstandVorne = messeAbstand(0);
-		float abstandHinten = messeAbstand(1);
+		float abstandVorne = messeAbstand(IR_SENSOR_VORNE);
+		float abstandHinten = messeAbstand(IR_SENSOR_HINTEN);
+		float diff = (abstandVorne - ABSTAND_IR_SENSOREN) - abstandHinten;
 
 		if (letzterAbstand + MAGISCHE_TOLERANZ_KONSTANTE < abstandVorne
 				|| letzterAbstand - MAGISCHE_TOLERANZ_KONSTANTE > abstandVorne) {
 			System.out.println("Koorektur Abstand zur Wand");
-			korregiereAbstand(abstandVorne);
+			korregiereAbstand(diff);
 			return true;
 		}
-
-		float diff = (abstandVorne - ABSTAND_IR_SENSOREN) - abstandHinten;
 
 		if (diff > TOLERANZ_DIFF_IR) {
 			System.out.println("Koorektur Diff WandWeg");
@@ -257,27 +245,15 @@ public class Robot {
 	}
 
 	private float messeAbstand(int i) {
-		if (i == 0) {
+		if (i == IR_SENSOR_VORNE) {
 			// vorne
 			return infrarotSensorVorne.messeAbstand();
-		} else if (i == 1) {
+		} else if (i == IR_SENSOR_HINTEN) {
 			// hinten
 			return infrarotSensorHinten.messeAbstand();
 		} else {
 			throw new IllegalArgumentException();
 		}
-	}
-
-	/**
-	 * berechnet den Winkel in dem der Roboter relativ zum ausgangswinkel zur
-	 * wand steht, abhägig vom ursprünglichen Abstand und Winkel
-	 * 
-	 * @param aktuellerAbstand
-	 * @return
-	 */
-	private float berechneWinkel(float differenz) {
-		float hypothenuse = FAHRE_GERADE_DISTANZ;
-		return (float) Math.toDegrees(Math.asin(differenz / hypothenuse));
 	}
 
 	private void fahreZuWand() {
@@ -299,10 +275,6 @@ public class Robot {
 	public boolean checkeHindernisUltraschall() {
 		float abstand = ultraschallSensor.getAbstandInCm();
 		return abstand < GRENZWERT_ABSTAND_WAND_FAHREN;
-	}
-
-	public void drehenAufDerStelle() {
-		motor.drehenAufDerStelle(-90);
 	}
 
 }
