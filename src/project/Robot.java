@@ -1,18 +1,7 @@
 package project;
 
-import static project.Config.ABSTAND_IR_SENSOREN;
-import static project.Config.DREHUNGEN_UM_KURVE;
-import static project.Config.GRENZWERT_ABSTAND_WAND_FAHREN;
-import static project.Config.INTERVALL_GROESSE_IR_MESSUNG;
-import static project.Config.IR_SENSOR_HINTEN;
-import static project.Config.IR_SENSOR_VORNE;
-import static project.Config.KONSTANTE_RAD_UMFANG;
-import static project.Config.MAGISCHE_TOLERANZ_KONSTANTE;
-import static project.Config.START_SPEED;
-import static project.Config.TOLERANZ_DIFF_IR;
-import static project.Direction.LEFT;
-import static project.Direction.RIGHT;
-import static project.Direction.FORWARD;
+import static project.Config.*;
+import static project.Direction.*;
 
 import java.util.LinkedList;
 
@@ -99,6 +88,7 @@ public class Robot {
 			// dreheZuWand();
 			while (!zielGefunden) {
 				folgeWand();
+				if(zielGefunden) return;
 				if (!checkeHindernisInfrarot()) {
 					// links frei
 					motor.setGeschwindigkeit(30);
@@ -168,6 +158,8 @@ public class Robot {
 			fahre();
 		}
 		while (darfFahren) {
+			this.zielGefunden = getLichtInProzent() > SCHWELLWERT_STOP;
+			if(zielGefunden) return;
 			linksKeineWand = !checkeHindernisInfrarot();
 			stehtVorHinderniss = checkeHindernisUltraschall();
 			darfFahren = !linksKeineWand && !stehtVorHinderniss;
@@ -320,8 +312,14 @@ public class Robot {
 		minimotor.drehe(FORWARD);
 		boolean ergebnis = checkeHindernisInfrarot();
 		minimotor.drehe(LEFT);
-		System.out.println("WAND?" + ergebnis);
 		return ergebnis;
+	}
 
+	/**
+	 *
+	 * @return Helligkeit in Prozent, 0-100
+	 */
+	public int getLichtInProzent() {
+		return new Double(lichtSensor.getWert() * 100.0).intValue();
 	}
 }

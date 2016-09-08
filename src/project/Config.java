@@ -22,7 +22,7 @@ public final class Config {
 	public static final Port LINKER_MOTOR_PORT = MotorPort.B;
 	public static final Port RECHTER_MOTOR_PORT = MotorPort.C;
 
-	public static final int SCHWELLWERT_STOP = 80;
+	public static final int SCHWELLWERT_STOP = 65;
 	public static final int START_SPEED = 30;
 
 	public static final int GRENZWERT_ABSTAND_WAND_SUCHEN = 50;
