@@ -143,7 +143,6 @@ public class Motor {
 		double rechtsNachher = motorRechts.getTachoCount();
 		double differenzLinks = linksVorher - linksNachher;
 		double differenzRechts = rechtsVorher - rechtsNachher;
-		System.out.println("Links: " + differenzLinks + ", Rechts: " + differenzRechts);
 	}
 
 	public void fahreGerade(double f) {
