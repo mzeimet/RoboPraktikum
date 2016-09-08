@@ -101,8 +101,10 @@ public class Robot {
 				folgeWand();
 				if (!checkeHindernisInfrarot()) {
 					// links frei
+					motor.setGeschwindigkeit(30);
 					motor.fahreGerade(CM_UM_KURVE);
 					drehe(LEFT);
+					motor.setGeschwindigkeit(30);
 					motor.fahreGerade(CM_UM_KURVE);
 				} else { // links hinderniss, sackgasse nicht möglich
 					drehe(Direction.RIGHT);
@@ -150,19 +152,29 @@ public class Robot {
 		boolean linksKeineWand = !checkeHindernisInfrarot();
 		boolean stehtVorHinderniss = checkeHindernisUltraschall();
 		if (stehtVorHinderniss) {
+			motor.stop();
 			stehtVorHinderniss = pruefeUltraschallMitInfrarot();
+			if(!stehtVorHinderniss) fahre();
 		}
 		boolean darfFahren = !linksKeineWand && !stehtVorHinderniss;
 		if (darfFahren) {
 			vergleichsAbstandVorne = messeAbstand(IR_SENSOR_VORNE);
+			System.out.println(vergleichsAbstandVorne);
 			vergleichsAbstandHinten = messeAbstand(IR_SENSOR_HINTEN);
+			System.out.println(vergleichsAbstandHinten);
+			int x = 5;
+			x++;
 			fahre();
 		}
 		while (darfFahren) {
 			linksKeineWand = !checkeHindernisInfrarot();
 			stehtVorHinderniss = checkeHindernisUltraschall();
 			darfFahren = !linksKeineWand && !stehtVorHinderniss;
-			System.out.println("Koorektur Beginn");
+			if (stehtVorHinderniss) {
+				motor.stop();
+				stehtVorHinderniss = pruefeUltraschallMitInfrarot();
+				if(!stehtVorHinderniss) fahre();
+			}
 			neueKorrektur();
 		}
 		motor.stop();
@@ -180,7 +192,6 @@ public class Robot {
 		motor.setGeschwindigkeitSpezifisch(START_SPEED + diffVorne, Direction.LEFT);
 
 		motor.forward();
-		System.out.println("Ende Korrektur");
 	}
 
 	private void korregiereAbstand(float differenz) {
@@ -198,35 +209,29 @@ public class Robot {
 	 * @return true falls noch alles stimmt
 	 */
 	private boolean pruefeUndKorrigiere() {
-		System.out.println("Start Korrektur");
 		float abstandVorne = messeAbstand(IR_SENSOR_VORNE);
 		float abstandHinten = messeAbstand(IR_SENSOR_HINTEN);
 		float diff = (abstandVorne - ABSTAND_IR_SENSOREN) - abstandHinten;
 
 		if (vergleichsAbstandVorne + MAGISCHE_TOLERANZ_KONSTANTE < abstandVorne
 				|| vergleichsAbstandVorne - MAGISCHE_TOLERANZ_KONSTANTE > abstandVorne) {
-			System.out.println("Koorektur Abstand zur Wand");
 			korregiereAbstand(diff);
 			return true;
 		}
 
 		if (diff > TOLERANZ_DIFF_IR) {
-			System.out.println("Koorektur Diff WandWeg");
 			motor.setGeschwindigkeitSpezifisch(START_SPEED + diff * 2, Direction.RIGHT);
 			motor.setGeschwindigkeitSpezifisch(START_SPEED, Direction.LEFT);
 
 		} else if (diff < 0 && Math.abs(diff) > TOLERANZ_DIFF_IR) {
-			System.out.println("Koorektur Diff WandNah");
 			motor.setGeschwindigkeitSpezifisch(START_SPEED + Math.abs(diff) * 2, Direction.LEFT);
 			motor.setGeschwindigkeitSpezifisch(START_SPEED, Direction.RIGHT);
 
 		} else {
-			System.out.println("Merkwürdig");
 			motor.setGeschwindigkeitSpezifisch(START_SPEED, Direction.LEFT);
 			motor.setGeschwindigkeitSpezifisch(START_SPEED, Direction.RIGHT);
 		}
 		motor.forward();
-		System.out.println("Ende Korrektur");
 		return true;
 	}
 
@@ -299,6 +304,7 @@ public class Robot {
 		minimotor.drehe(FORWARD);
 		boolean ergebnis = checkeHindernisInfrarot();
 		minimotor.drehe(LEFT);
+		System.out.println("WAND?" + ergebnis);
 		return ergebnis;
 		
 	}
