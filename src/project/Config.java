@@ -35,7 +35,7 @@ public final class Config {
 	public static final double KONSTANTE_RAD_UMFANG = 5.6f * 3.1415926;
 	public static final float ABSTAND_IR_SENSOREN = 2.5f; // TODO
 	public static final int TOLERANZ_DIFF_IR = 2;
-	public static final double CM_UM_KURVE = 1.2;
+	public static final double DREHUNGEN_UM_KURVE = 1.2;
 	public static final int IR_SENSOR_HINTEN = 1;
 	public static final int IR_SENSOR_VORNE = 0;
 

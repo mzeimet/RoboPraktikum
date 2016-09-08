@@ -1,7 +1,7 @@
 package project;
 
 import static project.Config.ABSTAND_IR_SENSOREN;
-import static project.Config.CM_UM_KURVE;
+import static project.Config.DREHUNGEN_UM_KURVE;
 import static project.Config.GRENZWERT_ABSTAND_WAND_FAHREN;
 import static project.Config.INTERVALL_GROESSE_IR_MESSUNG;
 import static project.Config.IR_SENSOR_HINTEN;
@@ -102,12 +102,12 @@ public class Robot {
 				if (!checkeHindernisInfrarot()) {
 					// links frei
 					motor.setGeschwindigkeit(30);
-					motor.fahreGerade(CM_UM_KURVE);
+					motor.fahreGerade(DREHUNGEN_UM_KURVE);
 					drehe(LEFT);
 					motor.setGeschwindigkeit(30);
-					motor.fahreGerade(CM_UM_KURVE);
+					motor.fahreGerade(DREHUNGEN_UM_KURVE);
 				} else { // links hinderniss, sackgasse nicht möglich
-					drehe(Direction.RIGHT);
+					rechtsDrehung();
 				}
 			}
 
@@ -154,7 +154,8 @@ public class Robot {
 		if (stehtVorHinderniss) {
 			motor.stop();
 			stehtVorHinderniss = pruefeUltraschallMitInfrarot();
-			if(!stehtVorHinderniss) fahre();
+			if (!stehtVorHinderniss)
+				fahre();
 		}
 		boolean darfFahren = !linksKeineWand && !stehtVorHinderniss;
 		if (darfFahren) {
@@ -173,7 +174,8 @@ public class Robot {
 			if (stehtVorHinderniss) {
 				motor.stop();
 				stehtVorHinderniss = pruefeUltraschallMitInfrarot();
-				if(!stehtVorHinderniss) fahre();
+				if (!stehtVorHinderniss)
+					fahre();
 			}
 			neueKorrektur();
 		}
@@ -208,10 +210,11 @@ public class Robot {
 
 		// fahre zurück um Abstand aufzubauen
 		// Wert muss ertestet werden
-		motor.fahreGerade(-5 / KONSTANTE_RAD_UMFANG);
+		motor.fahreGerade(-5.2 / KONSTANTE_RAD_UMFANG);
 
 		// Drehe zu Wand rechts
 		motor.drehenAufDerStelle(135);
+		SaveMove(2);
 	}
 
 	/**
@@ -311,6 +314,7 @@ public class Robot {
 		float abstand = ultraschallSensor.getAbstandInCm();
 		return abstand < GRENZWERT_ABSTAND_WAND_FAHREN;
 	}
+
 	private boolean pruefeUltraschallMitInfrarot() {
 		minimotor.setAusrichtung(LEFT);
 		minimotor.drehe(FORWARD);
@@ -318,6 +322,6 @@ public class Robot {
 		minimotor.drehe(LEFT);
 		System.out.println("WAND?" + ergebnis);
 		return ergebnis;
-		
+
 	}
 }
