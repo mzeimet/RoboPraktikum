@@ -193,7 +193,7 @@ public class Robot {
 
 		// fahre zurück um Abstand aufzubauen
 		// Wert muss ertestet werden
-		motor.fahreGerade(-5);
+		motor.fahreGerade(-5 / KONSTANTE_RAD_UMFANG);
 
 		// Drehe zu Wand rechts
 		motor.drehenAufDerStelle(135);
