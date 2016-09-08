@@ -25,7 +25,7 @@ public class MiniMotor {
 	}
 
 	public void drehe(Direction neueRichtung) {
-		motor.rotate(berechneGradZuDrehen(ausrichtung, neueRichtung));
+		motor.rotate(berechneGradZuDrehen(ausrichtung, neueRichtung),false);
 		this.ausrichtung = neueRichtung;
 	}
 

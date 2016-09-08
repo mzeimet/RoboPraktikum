@@ -12,6 +12,7 @@ import static project.Config.START_SPEED;
 import static project.Config.TOLERANZ_DIFF_IR;
 import static project.Direction.LEFT;
 import static project.Direction.RIGHT;
+import static project.Direction.FORWARD;
 
 import java.util.LinkedList;
 
@@ -148,6 +149,9 @@ public class Robot {
 		int tachoCount = motor.getTachoCount();
 		boolean linksKeineWand = !checkeHindernisInfrarot();
 		boolean stehtVorHinderniss = checkeHindernisUltraschall();
+		if (stehtVorHinderniss) {
+			stehtVorHinderniss = pruefeUltraschallMitInfrarot();
+		}
 		boolean darfFahren = !linksKeineWand && !stehtVorHinderniss;
 		if (darfFahren) {
 			vergleichsAbstandVorne = messeAbstand(IR_SENSOR_VORNE);
@@ -172,8 +176,8 @@ public class Robot {
 		float diffVorne = abstandVorne - vergleichsAbstandVorne;
 		float diffHinten = abstandHinten - vergleichsAbstandHinten;
 
-		motor.setGeschwindigkeitSpezifisch(START_SPEED + diffVorne, Direction.RIGHT);
-		motor.setGeschwindigkeitSpezifisch(START_SPEED - diffVorne, Direction.LEFT);
+		motor.setGeschwindigkeitSpezifisch(START_SPEED - diffVorne, Direction.RIGHT);
+		motor.setGeschwindigkeitSpezifisch(START_SPEED + diffVorne, Direction.LEFT);
 
 		motor.forward();
 		System.out.println("Ende Korrektur");
@@ -290,5 +294,12 @@ public class Robot {
 		float abstand = ultraschallSensor.getAbstandInCm();
 		return abstand < GRENZWERT_ABSTAND_WAND_FAHREN;
 	}
-
+	private boolean pruefeUltraschallMitInfrarot() {
+		minimotor.setAusrichtung(LEFT);
+		minimotor.drehe(FORWARD);
+		boolean ergebnis = checkeHindernisInfrarot();
+		minimotor.drehe(LEFT);
+		return ergebnis;
+		
+	}
 }
