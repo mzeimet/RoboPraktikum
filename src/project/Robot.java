@@ -202,6 +202,18 @@ public class Robot {
 
 	}
 
+	private void rechtsDrehung() {
+		// schaue in die Ecke
+		motor.drehenAufDerStelle(-45);
+
+		// fahre zurück um Abstand aufzubauen
+		// Wert muss ertestet werden
+		motor.fahreGerade(-5 / KONSTANTE_RAD_UMFANG);
+
+		// Drehe zu Wand rechts
+		motor.drehenAufDerStelle(135);
+	}
+
 	/**
 	 * Testet ob der Abstand insgesamt stimmt, und ob die differenz zwischen den
 	 * ir sensoren nicht zu groß geworden ist
