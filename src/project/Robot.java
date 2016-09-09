@@ -95,7 +95,7 @@ public class Robot {
 					motor.fahreGerade(DREHUNGEN_UM_KURVE);
 					drehe(LEFT);
 					motor.setGeschwindigkeit(30);
-					motor.fahreGerade(DREHUNGEN_UM_KURVE);
+					motor.fahreGerade(DREHUNGEN_UM_KURVE * 0.5);
 				} else { // links hinderniss, sackgasse nicht möglich
 					rechtsDrehung();
 				}
@@ -112,6 +112,8 @@ public class Robot {
 	 */
 	private void machePlatz() {
 		motor.fahreGerade(1);
+		motor.setGeschwindigkeit(0);
+		motor.forward();
 		motor.stop();
 
 	}
@@ -201,7 +203,22 @@ public class Robot {
 		
 		motor.drehenAufDerStelle(45);
 		minimotor.drehe(FORWARD);
-		motor.fahreGerade((messeAbstand(0)-GRENZWERT_ABSTAND_WAND_FAHREN)/ KONSTANTE_RAD_UMFANG);
+		float abstand = messeAbstand(0);
+		if(abstand == 15){
+			boolean stehtVorHinderniss = false;
+			fahre();
+			while(!stehtVorHinderniss){
+				stehtVorHinderniss = checkeHindernisUltraschall();
+				if (stehtVorHinderniss) {
+					motor.stop();
+					stehtVorHinderniss = checkeHindernisInfrarot();
+					if(!stehtVorHinderniss){
+						fahre();
+					}
+				}
+			}
+		}
+		motor.fahreGerade((-GRENZWERT_ABSTAND_WAND_FAHREN)/ KONSTANTE_RAD_UMFANG);
 		minimotor.drehe(LEFT);
 		// Drehe zu Wand rechts
 		motor.drehenAufDerStelle(90);
