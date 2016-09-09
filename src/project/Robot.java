@@ -66,11 +66,11 @@ public class Robot {
 	}
 
 	public void doWhatLemmingsDo(LinkedList<Integer> memory) {
-		System.out.println(getMemory().size());
+		// System.out.println(getMemory().size());
 
 		for (int i = 0; i < getMemory().size(); i++) {
 
-			int j = getMemory().getFirst();
+			int j = getMemory().getLast();
 			switch (j) {
 			case 0:// Links
 				linksDrehung();
@@ -82,6 +82,7 @@ public class Robot {
 				motor.driveTachoCount(j);
 				break;
 			}
+			memory.removeLast();
 		}
 	}
 

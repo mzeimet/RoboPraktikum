@@ -159,6 +159,27 @@ public class Motor {
 
 	}
 
+	public void driveTachoCount(Integer i) {
+
+		motorLinks.synchronizeWith(new RegulatedMotor[] { motorRechts });
+		motorLinks.startSynchronization();
+
+		motorLinks.setSpeed(30 * 740 / 100);
+		motorRechts.setSpeed(30 * 740 / 100);
+
+		motorLinks.rotate(i);
+
+		motorRechts.rotate(i);
+
+		motorLinks.flt();
+		motorRechts.flt();
+		motorLinks.endSynchronization();
+
+		motorLinks.waitComplete();
+		motorRechts.waitComplete();
+
+	}
+
 	public int getTachoCount() {
 		return motorLinks.getTachoCount();
 	}
