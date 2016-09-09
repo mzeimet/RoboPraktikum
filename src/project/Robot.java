@@ -98,6 +98,8 @@ public class Robot {
 					motor.fahreGerade(DREHUNGEN_UM_KURVE * 0.5);
 				} else { // links hinderniss, sackgasse nicht möglich
 					rechtsDrehung();
+					this.zielGefunden = getLichtInProzent() > SCHWELLWERT_STOP;
+					if(zielGefunden) return;
 				}
 			}
 
@@ -218,7 +220,7 @@ public class Robot {
 				}
 			}
 		}
-		motor.fahreGerade((-GRENZWERT_ABSTAND_WAND_FAHREN)/ KONSTANTE_RAD_UMFANG);
+		motor.fahreGerade((abstand-GRENZWERT_ABSTAND_WAND_FAHREN)/ KONSTANTE_RAD_UMFANG);
 		minimotor.drehe(LEFT);
 		// Drehe zu Wand rechts
 		motor.drehenAufDerStelle(90);
