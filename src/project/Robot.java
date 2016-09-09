@@ -85,6 +85,14 @@ public class Robot {
 		}
 	}
 
+	public void linksDrehung() {
+		motor.setGeschwindigkeit(30);
+		motor.fahreGerade(1.2);
+		drehe(LEFT);
+		motor.setGeschwindigkeit(30);
+		motor.fahreGerade(1.2 * 0.5);
+	}
+
 	public float getUltraschallAbstand() {
 		return ultraschallSensor.getAbstandInCm();
 	}
