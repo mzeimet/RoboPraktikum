@@ -1,7 +1,19 @@
 package project;
 
-import static project.Config.*;
-import static project.Direction.*;
+import static project.Config.ABSTAND_IR_SENSOREN;
+import static project.Config.DREHUNGEN_UM_KURVE;
+import static project.Config.GRENZWERT_ABSTAND_WAND_FAHREN;
+import static project.Config.INTERVALL_GROESSE_IR_MESSUNG;
+import static project.Config.IR_SENSOR_HINTEN;
+import static project.Config.IR_SENSOR_VORNE;
+import static project.Config.KONSTANTE_RAD_UMFANG;
+import static project.Config.MAGISCHE_TOLERANZ_KONSTANTE;
+import static project.Config.SCHWELLWERT_STOP;
+import static project.Config.START_SPEED;
+import static project.Config.TOLERANZ_DIFF_IR;
+import static project.Direction.FORWARD;
+import static project.Direction.LEFT;
+import static project.Direction.RIGHT;
 
 import java.util.LinkedList;
 
@@ -53,6 +65,26 @@ public class Robot {
 		motor.drehe(richtung);
 	}
 
+	public void doWhatLemmingsDo(LinkedList<Integer> memory) {
+		System.out.println(getMemory().size());
+
+		for (int i = 0; i < getMemory().size(); i++) {
+
+			int j = getMemory().getFirst();
+			switch (j) {
+			case 0:// Links
+				linksDrehung();
+				break;
+			case 1:// Rechts
+				rechtsDrehung();
+
+			default:
+				motor.driveTachoCount(j);
+				break;
+			}
+		}
+	}
+
 	public float getUltraschallAbstand() {
 		return ultraschallSensor.getAbstandInCm();
 	}
@@ -88,7 +120,8 @@ public class Robot {
 			// dreheZuWand();
 			while (!zielGefunden) {
 				folgeWand();
-				if(zielGefunden) return;
+				if (zielGefunden)
+					return;
 				if (!checkeHindernisInfrarot()) {
 					// links frei
 					motor.setGeschwindigkeit(30);
@@ -99,7 +132,8 @@ public class Robot {
 				} else { // links hinderniss, sackgasse nicht möglich
 					rechtsDrehung();
 					this.zielGefunden = getLichtInProzent() > SCHWELLWERT_STOP;
-					if(zielGefunden) return;
+					if (zielGefunden)
+						return;
 				}
 			}
 
@@ -158,7 +192,8 @@ public class Robot {
 		}
 		while (darfFahren) {
 			this.zielGefunden = getLichtInProzent() > SCHWELLWERT_STOP;
-			if(zielGefunden) return;
+			if (zielGefunden)
+				return;
 			linksKeineWand = !checkeHindernisInfrarot();
 			stehtVorHinderniss = checkeHindernisUltraschall();
 			darfFahren = !linksKeineWand && !stehtVorHinderniss;
@@ -202,25 +237,25 @@ public class Robot {
 		// fahre zurück um Abstand aufzubauen
 		// Wert muss ertestet werden
 		motor.fahreGerade(-5.2 / KONSTANTE_RAD_UMFANG);
-		
+
 		motor.drehenAufDerStelle(45);
 		minimotor.drehe(FORWARD);
 		float abstand = messeAbstand(0);
-		if(abstand == 15){
+		if (abstand == 15) {
 			boolean stehtVorHinderniss = false;
 			fahre();
-			while(!stehtVorHinderniss){
+			while (!stehtVorHinderniss) {
 				stehtVorHinderniss = checkeHindernisUltraschall();
 				if (stehtVorHinderniss) {
 					motor.stop();
 					stehtVorHinderniss = checkeHindernisInfrarot();
-					if(!stehtVorHinderniss){
+					if (!stehtVorHinderniss) {
 						fahre();
 					}
 				}
 			}
 		}
-		motor.fahreGerade((abstand-GRENZWERT_ABSTAND_WAND_FAHREN)/ KONSTANTE_RAD_UMFANG);
+		motor.fahreGerade((abstand - GRENZWERT_ABSTAND_WAND_FAHREN) / KONSTANTE_RAD_UMFANG);
 		minimotor.drehe(LEFT);
 		// Drehe zu Wand rechts
 		motor.drehenAufDerStelle(90);
