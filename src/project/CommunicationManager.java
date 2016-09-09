@@ -32,8 +32,10 @@ public class CommunicationManager {
 
 		// Sender muss als letztes Packet die -1, für den Verbindungsabbruch
 		// Senden
-		while (memory.getFirst() != -1) {
+		boolean bla = false;
+		while (memory.size() < 1) {
 			memory.addFirst(dataIn.readInt());
+			// bla = (memory.getFirst() != -1);
 		}
 
 		dataIn.close();
