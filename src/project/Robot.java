@@ -56,17 +56,12 @@ public class Robot {
 			getMemory().removeFirst();
 			switch (getMemory().getFirst()) {
 			case 0:// Links
-				System.out.println("Case: 0");
-				motor.fahreGerade(3);
-				motor.drehenAufDerStelle(-90);
-				motor.fahreGerade(3);
+				linksDrehung();
 				break;
 			case 1:// Rechts
-				System.out.println("Case: 1");
-				motor.drehenAufDerStelle(90);
+				rechtsDrehung();
 
 			default:
-
 				motor.driveTachoCount(memory.get(i));
 				break;
 			}
@@ -206,6 +201,21 @@ public class Robot {
 			}
 
 		}
+	}
+
+	private void rechtsDrehung() {
+		// schaue in die Ecke
+		motor.drehenAufDerStelle(-45);
+
+		// fahre zurück um Abstand aufzubauen
+		// Wert muss ertestet werden
+		motor.fahreGerade(-5.2 / KONSTANTE_RAD_UMFANG);
+
+		motor.drehenAufDerStelle(45);
+
+		motor.fahreGerade((0.5) / KONSTANTE_RAD_UMFANG);
+		// Drehe zu Wand rechts
+		motor.drehenAufDerStelle(90);
 	}
 
 	/**

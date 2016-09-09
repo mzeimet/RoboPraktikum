@@ -152,13 +152,13 @@ public class Motor {
 		motorLinks.synchronizeWith(new RegulatedMotor[] { motorRechts });
 		motorLinks.startSynchronization();
 
-		motorLinks.setSpeed(30);
-		motorRechts.setSpeed(30);
+		motorLinks.setSpeed(30 * 740 / 100);
+		motorRechts.setSpeed(30 * 740 / 100);
 
-		motorLinks.forward();
-		motorRechts.forward();
-		while (motorLinks.getTachoCount() < i) {
-		}
+		motorLinks.rotate(i);
+
+		motorRechts.rotate(i);
+
 		motorLinks.flt();
 		motorRechts.flt();
 		motorLinks.endSynchronization();
