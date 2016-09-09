@@ -111,7 +111,8 @@ public class Robot {
 	 * Macht Platz damit der dumme ihn nicht rammt
 	 */
 	private void machePlatz() {
-		motor.fahreGerade(15);
+		motor.fahreGerade(1);
+		motor.stop();
 
 	}
 
@@ -144,17 +145,11 @@ public class Robot {
 		if (stehtVorHinderniss) {
 			motor.stop();
 			stehtVorHinderniss = pruefeUltraschallMitInfrarot();
-			if (!stehtVorHinderniss)
-				fahre();
 		}
 		boolean darfFahren = !linksKeineWand && !stehtVorHinderniss;
 		if (darfFahren) {
 			vergleichsAbstandVorne = messeAbstand(IR_SENSOR_VORNE);
-			System.out.println(vergleichsAbstandVorne);
 			vergleichsAbstandHinten = messeAbstand(IR_SENSOR_HINTEN);
-			System.out.println(vergleichsAbstandHinten);
-			int x = 5;
-			x++;
 			fahre();
 		}
 		while (darfFahren) {
@@ -203,9 +198,13 @@ public class Robot {
 		// fahre zurück um Abstand aufzubauen
 		// Wert muss ertestet werden
 		motor.fahreGerade(-5.2 / KONSTANTE_RAD_UMFANG);
-
+		
+		motor.drehenAufDerStelle(45);
+		minimotor.drehe(FORWARD);
+		motor.fahreGerade((messeAbstand(0)-GRENZWERT_ABSTAND_WAND_FAHREN)/ KONSTANTE_RAD_UMFANG);
+		minimotor.drehe(LEFT);
 		// Drehe zu Wand rechts
-		motor.drehenAufDerStelle(135);
+		motor.drehenAufDerStelle(90);
 		SaveMove(2);
 	}
 
@@ -320,6 +319,8 @@ public class Robot {
 	 * @return Helligkeit in Prozent, 0-100
 	 */
 	public int getLichtInProzent() {
-		return new Double(lichtSensor.getWert() * 100.0).intValue();
+		int wert = new Double(lichtSensor.getWert() * 100.0).intValue();
+		System.out.println(wert);
+		return wert;
 	}
 }

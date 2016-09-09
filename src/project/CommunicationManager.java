@@ -13,8 +13,12 @@ public class CommunicationManager {
 	
 	public LinkedList<Integer> start(LinkedList<Integer> memory) {
 
-		testData(memory);
-		// findRobo(memory);
+		 try {
+			findRobo(memory);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return null;
 
 	}
