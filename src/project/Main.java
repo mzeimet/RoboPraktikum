@@ -27,23 +27,37 @@ public class Main {
 	}
 
 	private void run() {
-		Sound.beep();
-		System.out.println("Start fahre und speichere Strecke");
-		LinkedList<Integer> memory = fahreUndSpeicherStrecke();
-		Sound.beep();
-		System.out.println("Ende fahre und speichere Strecke, beginne fahre der gespeicherten Strecke");
-		Sound.beep();
-		//Hier dann Breakpoint um Robo zurückzustellen
-		fahreGespeicherteStrecke(memory);
+//		Sound.beep();
+//		System.out.println("Start fahre und speichere Strecke");
+//		LinkedList<Integer> memory = fahreUndSpeicherStrecke();
+//		Sound.beep();
+//		System.out.println("Ende fahre und speichere Strecke, beginne fahre der gespeicherten Strecke");
+//		Sound.beep();
+//		//Hier dann Breakpoint um Robo zurückzustellen
+//		LinkedList<Integer> revertedMemory = new LinkedList<Integer>();
+//		for (Integer integer : memory) {
+//			revertedMemory.addLast(integer);
+//		}
+		LinkedList<Integer> revertedMemory = beispielDaten();
+		fahreGespeicherteStrecke(revertedMemory);
 		System.out.println("Ende :)");
 		Sound.beep();
 		Sound.beep();
 		Sound.beep();
 	}
 
+	private LinkedList<Integer> beispielDaten() {
+		LinkedList<Integer> result = new LinkedList<Integer>();
+		result.addLast(429);
+		result.addLast(1);
+		result.addLast(666);
+		result.addLast(2);
+		return result;
+	}
+
 	private LinkedList<Integer> fahreUndSpeicherStrecke() {
 		robot.findeWand();
-		return robot.getBrain().start(robot.getMemory());
+		return robot.getMemory();
 	}
 	
 	private void fahreGespeicherteStrecke(LinkedList<Integer> memory){

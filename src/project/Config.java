@@ -38,5 +38,9 @@ public final class Config {
 	public static final double DREHUNGEN_UM_KURVE = 1.2;
 	public static final int IR_SENSOR_HINTEN = 1;
 	public static final int IR_SENSOR_VORNE = 0;
+	
+	public static final float CM_RUECKFAHREN_IN_ECKE = -5.2f;
+	
+	public static final int IR_SENSOR_MAX_ABSTAND = 15;
 
 }
