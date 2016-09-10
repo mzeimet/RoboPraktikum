@@ -26,6 +26,7 @@ public class Main {
 		Sound.beep();
 		robot.findeWand();
 		LinkedList<Integer> memory = robot.getBrain().start(robot.getMemory());
+		robot.doWhatLemmingsDo(robot.getMemory());
 		Sound.beep();
 		Sound.beep();
 		Sound.beep();
