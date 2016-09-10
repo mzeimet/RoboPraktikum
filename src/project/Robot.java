@@ -141,8 +141,8 @@ public class Robot {
 						return;
 				}
 			}
-
-			machePlatz();
+			motor.hardStop();
+//			machePlatz();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -152,10 +152,10 @@ public class Robot {
 	 * Macht Platz damit der dumme ihn nicht rammt
 	 */
 	private void machePlatz() {
-		motor.fahreGerade(1);
-		motor.setGeschwindigkeit(0);
-		motor.forward();
-		motor.stop();
+//		motor.fahreGerade(1);
+//		motor.setGeschwindigkeit(0);
+//		motor.forward();
+//		motor.stop();
 
 	}
 
@@ -381,7 +381,6 @@ public class Robot {
 	 */
 	public int getLichtInProzent() {
 		int wert = new Double(lichtSensor.getWert() * 100.0).intValue();
-		System.out.println(wert);
 		return wert;
 	}
 
