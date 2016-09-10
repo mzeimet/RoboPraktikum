@@ -15,55 +15,40 @@ import lejos.hardware.Sound;
 
 public class Main {
 
+	private Robot robot;
+
+	public Main() {
+		this.robot = new Robot(US_PORT, IR_PORT_VORNE, IR_PORT_HINTEN, MINI_MOTOR_PORT, LINKER_MOTOR_PORT,
+				RECHTER_MOTOR_PORT, LICHT_PORT);
+	}
+
 	public static void main(String[] args) {
 		new Main().run();
 	}
 
 	private void run() {
-		Robot robot = new Robot(US_PORT, IR_PORT_VORNE, IR_PORT_HINTEN, MINI_MOTOR_PORT, LINKER_MOTOR_PORT,
-				RECHTER_MOTOR_PORT, LICHT_PORT);
-
 		Sound.beep();
+		System.out.println("Start fahre und speichere Strecke");
+		LinkedList<Integer> memory = fahreUndSpeicherStrecke();
+		Sound.beep();
+		System.out.println("Ende fahre und speichere Strecke, beginne fahre der gespeicherten Strecke");
+		Sound.beep();
+		//Hier dann Breakpoint um Robo zurückzustellen
+		fahreGespeicherteStrecke(memory);
+		System.out.println("Ende :)");
+		Sound.beep();
+		Sound.beep();
+		Sound.beep();
+	}
+
+	private LinkedList<Integer> fahreUndSpeicherStrecke() {
 		robot.findeWand();
-		LinkedList<Integer> memory = robot.getBrain().start(robot.getMemory());
-		robot.doWhatLemmingsDo(robot.getMemory());
-		Sound.beep();
-		Sound.beep();
-		Sound.beep();
-
+		return robot.getBrain().start(robot.getMemory());
 	}
-
-	private boolean kleinerSchwellwert(int percentLeft, int percentRight) {
-		return percentLeft < SCHWELLWERT_STOP && percentRight < SCHWELLWERT_STOP;
+	
+	private void fahreGespeicherteStrecke(LinkedList<Integer> memory){
+		robot.doWhatLemmingsDo(memory);
 	}
-
-	// private void searchLight(Robot robot) {
-	// robot.setGeneralSpeed(START_SPEED);
-	// robot.runForward();
-	//
-	// int lightPercentLeft = 0;
-	// int lightPercentRight = 0;
-	//
-	// while (kleinerSchwellwert(lightPercentLeft, lightPercentRight)) {
-	// lightPercentLeft = robot.getLigthInPercent(LEFT);
-	// lightPercentRight = robot.getLigthInPercent(RIGHT);
-	// accelerateTowardsLight(lightPercentLeft, lightPercentRight, robot);
-	// Delay.msDelay(250);
-	// }
-	// robot.standStill();
-	// }
-	//
-	// private void accelerateTowardsLight(int lightPercentLeft, int
-	// lightPercentRight, Robot robot) {
-	// int diff = lightPercentLeft - lightPercentRight;
-	// if(diff <0){// rechts groesser
-	// lightPercentLeft+=10 *diff;
-	// }else{//links groesser
-	// lightPercentRight+=10 *diff;
-	// }
-	// robot.setSpeedInPercent(lightPercentRight, LEFT);
-	// robot.setSpeedInPercent(lightPercentLeft, RIGHT);
-	// System.out.println("Motor R:"+lightPercentLeft + "\n" +"Motor L:"+
-	// lightPercentRight);
-	// }
+	
+	
 }

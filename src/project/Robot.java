@@ -28,7 +28,7 @@ public class Robot {
 
 	private CommunicationManager Brain;
 	private LinkedList<Integer> memory = new LinkedList<Integer>();
-
+	
 	private Lichtsensor lichtSensor;
 	private InfrarotSensor infrarotSensorVorne;
 	private InfrarotSensor infrarotSensorHinten;
@@ -66,20 +66,16 @@ public class Robot {
 	}
 
 	public void doWhatLemmingsDo(LinkedList<Integer> memory) {
-		// System.out.println(getMemory().size());
-
 		for (int i = 0; i < getMemory().size(); i++) {
-
-			int j = getMemory().getLast();
-			switch (j) {
+			int aktuellerMove = getMemory().getLast();
+			switch (aktuellerMove) {
 			case 0:// Links
 				linksDrehung();
 				break;
 			case 1:// Rechts
 				rechtsDrehung();
-
 			default:
-				motor.driveTachoCount(j);
+				motor.driveTachoCount(aktuellerMove);
 				break;
 			}
 			memory.removeLast();
@@ -127,7 +123,7 @@ public class Robot {
 		try {
 			// fahreZuWand();
 			// dreheZuWand();
-			while (!zielGefunden) {
+			while (!checkZielGefunden()) {
 				folgeWand();
 				if (zielGefunden)
 					return;
@@ -163,6 +159,10 @@ public class Robot {
 
 	}
 
+	/**
+	 * Dreht den Roboter parallel zur Wand (nach rechts). Wird aufgerufen wenn
+	 * der Roboter mit der Front zur Wand steht.
+	 */
 	private void dreheZuWand() {
 		int gradBeiMin = 0;
 		float min = Float.MAX_VALUE;
@@ -200,9 +200,7 @@ public class Robot {
 			fahre();
 		}
 		while (darfFahren) {
-			this.zielGefunden = getLichtInProzent() > SCHWELLWERT_STOP;
-			if (zielGefunden)
-				return;
+			if (checkZielGefunden())return;
 			linksKeineWand = !checkeHindernisInfrarot();
 			stehtVorHinderniss = checkeHindernisUltraschall();
 			darfFahren = !linksKeineWand && !stehtVorHinderniss;
@@ -385,5 +383,10 @@ public class Robot {
 		int wert = new Double(lichtSensor.getWert() * 100.0).intValue();
 		System.out.println(wert);
 		return wert;
+	}
+
+	public boolean checkZielGefunden() {
+		this.zielGefunden = getLichtInProzent() > SCHWELLWERT_STOP;
+		return zielGefunden;
 	}
 }
