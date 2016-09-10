@@ -42,11 +42,6 @@ public class Robot {
 	}
 
 	private void drehe(Direction richtung) {
-		if (richtung.equals(RIGHT)) {
-			SaveMove(1);
-		} else {
-			SaveMove(0);
-		}
 		motor.drehe(richtung);
 	}
 
@@ -60,7 +55,9 @@ public class Robot {
 			case 1:// Rechts
 				rechtsDrehungDoof();
 			default:
+				System.out.println(motor.getTachoCount());
 				motor.driveTachoCount(aktuellerMove);
+				System.out.println(motor.getTachoCount());
 				break;
 			}
 		}
@@ -77,7 +74,7 @@ public class Robot {
 		// herstellen
 		motor.drehenAufDerStelle(45);
 
-		if (checkZielGefunden())
+		if(!zielGefunden & checkZielGefunden())
 			return; // breche Drehung ab
 
 		minimotor.drehe(FORWARD);
@@ -90,7 +87,7 @@ public class Robot {
 			motor.drehenAufDerStelle(90);
 		}
 		minimotor.drehe(LEFT);
-		SaveMove(2);
+		SaveMove(1);
 	}
 
 	private void rechtsDrehungDoof() {
@@ -98,19 +95,19 @@ public class Robot {
 		motor.fahreGerade(CM_RUECKFAHREN_IN_ECKE / KONSTANTE_RAD_UMFANG);
 		motor.drehenAufDerStelle(45);
 		motor.drehenAufDerStelle(90);
-		minimotor.drehe(LEFT);
 	}
 
 	public void linksDrehung() {
 		motor.setGeschwindigkeit(30);
 		motor.fahreGerade(DREHUNGEN_UM_KURVE);
-		if (checkZielGefunden())
+		if(!zielGefunden & checkZielGefunden())
 			return; // bricht ab weil ende signalisiert wurde
 		drehe(LEFT);
-		if (checkZielGefunden())
+		if(!zielGefunden & checkZielGefunden())
 			return; // bricht ab weil ende signalisiert wurde
 		motor.setGeschwindigkeit(30);
 		motor.fahreGerade(DREHUNGEN_UM_KURVE * 0.5);
+		SaveMove(0);
 	}
 
 	public float getUltraschallAbstand() {
@@ -242,7 +239,7 @@ public class Robot {
 		boolean stehtVorHinderniss = false;
 		fahre();
 		while (!stehtVorHinderniss) {
-			if (checkZielGefunden())
+			if(!zielGefunden & checkZielGefunden())
 				return; // breche Drehung ab
 			stehtVorHinderniss = checkeHindernisUltraschall();
 			if (stehtVorHinderniss) {

@@ -176,8 +176,6 @@ public class Motor {
 
 		motorRechts.rotate(i);
 
-		motorLinks.flt();
-		motorRechts.flt();
 		motorLinks.endSynchronization();
 
 		motorLinks.waitComplete();

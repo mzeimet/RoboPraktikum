@@ -27,18 +27,18 @@ public class Main {
 	}
 
 	private void run() {
-//		Sound.beep();
-//		System.out.println("Start fahre und speichere Strecke");
-//		LinkedList<Integer> memory = fahreUndSpeicherStrecke();
-//		Sound.beep();
-//		System.out.println("Ende fahre und speichere Strecke, beginne fahre der gespeicherten Strecke");
-//		Sound.beep();
-//		//Hier dann Breakpoint um Robo zurückzustellen
-//		LinkedList<Integer> revertedMemory = new LinkedList<Integer>();
-//		for (Integer integer : memory) {
-//			revertedMemory.addLast(integer);
-//		}
-		LinkedList<Integer> revertedMemory = beispielDaten();
+		Sound.beep();
+		System.out.println("Start fahre und speichere Strecke");
+		LinkedList<Integer> memory = fahreUndSpeicherStrecke();
+		Sound.beep();
+		System.out.println("Ende fahre und speichere Strecke, beginne fahre der gespeicherten Strecke");
+		Sound.beep();
+		//Hier dann Breakpoint um Robo zurückzustellen
+		LinkedList<Integer> revertedMemory = new LinkedList<Integer>();
+		for (Integer integer : memory) {
+			revertedMemory.addLast(integer);
+		}
+//		LinkedList<Integer> revertedMemory = beispielDaten();
 		fahreGespeicherteStrecke(revertedMemory);
 		System.out.println("Ende :)");
 		Sound.beep();
@@ -49,9 +49,9 @@ public class Main {
 	private LinkedList<Integer> beispielDaten() {
 		LinkedList<Integer> result = new LinkedList<Integer>();
 		result.addLast(429);
-		result.addLast(1);
+		result.addLast(0);
 		result.addLast(666);
-		result.addLast(2);
+		result.addLast(1);
 		return result;
 	}
 
