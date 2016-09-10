@@ -33,7 +33,12 @@ public class Motor {
 		motorLinks.endSynchronization();
 
 	}
-
+	
+	public void hardStop(){
+		motorLinks.stop();
+		motorRechts.stop();
+	}
+	
 	public void stop() {
 
 		motorLinks.synchronizeWith(new RegulatedMotor[] { motorRechts });
