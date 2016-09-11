@@ -3,7 +3,7 @@ package project;
 import lejos.hardware.port.MotorPort;
 import lejos.hardware.port.Port;
 
-public final class Config {
+public final class Config { 
 	public static final int TOP_SPEED = 740;
 	public static final double RADABSTAND = 12.2;
 	public static final double RADDURCHMESSER = 6;

@@ -8,7 +8,7 @@ import java.util.LinkedList;
 import lejos.hardware.Bluetooth;
 import lejos.remote.nxt.NXTConnection;
 
-public class CommunicationManager {
+public class CommunicationManager { 
 
 	
 	public LinkedList<Integer> start(LinkedList<Integer> memory) {

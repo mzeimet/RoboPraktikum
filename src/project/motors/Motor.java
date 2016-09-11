@@ -16,7 +16,7 @@ import project.Direction;
 public class Motor {
 
 	private EV3LargeRegulatedMotor motorLinks;
-	private EV3LargeRegulatedMotor motorRechts;
+	private EV3LargeRegulatedMotor motorRechts; 
 
 	public Motor(Port linkerMotorPort, Port rechterMotorPort) {
 		this.motorLinks = new EV3LargeRegulatedMotor(linkerMotorPort);

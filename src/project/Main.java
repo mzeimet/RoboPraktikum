@@ -31,12 +31,13 @@ public class Main {
 		System.out.println("Start fahre und speichere Strecke");
 		LinkedList<Integer> memory = fahreUndSpeicherStrecke();
 		Sound.beep();
+		robot.setZielGefunden(true);
 		System.out.println("Ende fahre und speichere Strecke, beginne fahre der gespeicherten Strecke");
 		Sound.beep();
 		//Hier dann Breakpoint um Robo zurückzustellen
-		LinkedList<Integer> revertedMemory = new LinkedList<Integer>();
-		for (Integer integer : memory) {
-			revertedMemory.addLast(integer);
+		LinkedList<Integer> revertedMemory = new LinkedList<Integer>(); //bsp [1, 677, 1, 670, 0, 475]
+		for (int i = 0; i< memory.size(); i++) {
+			revertedMemory.addFirst(memory.get(i));
 		}
 //		LinkedList<Integer> revertedMemory = beispielDaten();
 		fahreGespeicherteStrecke(revertedMemory);
@@ -48,12 +49,14 @@ public class Main {
 
 	private LinkedList<Integer> beispielDaten() {
 		LinkedList<Integer> result = new LinkedList<Integer>();
-		result.addLast(429);
+		result.addLast(475);
 		result.addLast(0);
-		result.addLast(666);
+		result.addLast(670);
+		result.addLast(1);
+		result.addLast(677);
 		result.addLast(1);
 		return result;
-	}
+	} 
 
 	private LinkedList<Integer> fahreUndSpeicherStrecke() {
 		robot.findeWand();

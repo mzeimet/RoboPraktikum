@@ -54,10 +54,9 @@ public class Robot {
 				break;
 			case 1:// Rechts
 				rechtsDrehungDoof();
+				break;
 			default:
-				System.out.println(motor.getTachoCount());
 				motor.driveTachoCount(aktuellerMove);
-				System.out.println(motor.getTachoCount());
 				break;
 			}
 		}
@@ -74,19 +73,19 @@ public class Robot {
 		// herstellen
 		motor.drehenAufDerStelle(45);
 
-		if(!zielGefunden & checkZielGefunden())
+		if (!zielGefunden && checkZielGefunden())
 			return; // breche Drehung ab
 
 		minimotor.drehe(FORWARD);
 		float abstand = messeAbstand(IR_SENSOR_VORNE);
-		if (abstand == IR_SENSOR_MAX_ABSTAND) {
-			woIstMeineWandHin();
-		} else { // fahre näher an die Wand ran
-			motor.fahreGerade((abstand - GRENZWERT_ABSTAND_WAND_FAHREN) / KONSTANTE_RAD_UMFANG);
-			// Drehe parallel zur ehemals rechten Wand
-			motor.drehenAufDerStelle(90);
-		}
+		// fahre näher an die Wand ran
+		motor.fahreGerade((abstand - GRENZWERT_ABSTAND_WAND_FAHREN) / KONSTANTE_RAD_UMFANG);
+		// Drehe parallel zur ehemals rechten Wand
+		motor.drehenAufDerStelle(90);
 		minimotor.drehe(LEFT);
+		if (messeAbstand(IR_SENSOR_VORNE) == IR_SENSOR_MAX_ABSTAND) {
+//			woIstMeineWandHin();
+		}
 		SaveMove(1);
 	}
 
@@ -100,14 +99,18 @@ public class Robot {
 	public void linksDrehung() {
 		motor.setGeschwindigkeit(30);
 		motor.fahreGerade(DREHUNGEN_UM_KURVE);
-		if(!zielGefunden & checkZielGefunden())
+		if (!zielGefunden && checkZielGefunden())
 			return; // bricht ab weil ende signalisiert wurde
 		drehe(LEFT);
-		if(!zielGefunden & checkZielGefunden())
+		if (!zielGefunden && checkZielGefunden())
 			return; // bricht ab weil ende signalisiert wurde
 		motor.setGeschwindigkeit(30);
 		motor.fahreGerade(DREHUNGEN_UM_KURVE * 0.5);
-		SaveMove(0);
+		if (!zielGefunden && messeAbstand(IR_SENSOR_VORNE) == IR_SENSOR_MAX_ABSTAND) {
+//			woIstMeineWandHin();
+		}
+		if (!zielGefunden)
+			SaveMove(0);
 	}
 
 	public float getUltraschallAbstand() {
@@ -119,10 +122,10 @@ public class Robot {
 			throw new IllegalArgumentException();
 		switch (dir) {
 		case 0: // LEFT
-			getMemory().addFirst(1);
+			getMemory().addFirst(0);
 			break;
 		case 1: // RIGHT
-			getMemory().addFirst(2);
+			getMemory().addFirst(1);
 			break;
 		default: // FORWARD
 			getMemory().addFirst(dir);
@@ -141,7 +144,6 @@ public class Robot {
 
 	public void findeWand() {
 		try {
-			// fahreZuWand();
 			// dreheZuWand();
 			while (!checkZielGefunden()) {
 				folgeWand();
@@ -232,25 +234,13 @@ public class Robot {
 	}
 
 	/**
-	 * Roboter hat in der rechsDrehung seine Wand verloren
+	 * Roboter hat in der Drehung seine Wand verloren
 	 */
 	private void woIstMeineWandHin() {
 		// findet die Wand links nicht mehr
-		boolean stehtVorHinderniss = false;
-		fahre();
-		while (!stehtVorHinderniss) {
-			if(!zielGefunden & checkZielGefunden())
-				return; // breche Drehung ab
-			stehtVorHinderniss = checkeHindernisUltraschall();
-			if (stehtVorHinderniss) {
-				motor.stop();
-				stehtVorHinderniss = checkeHindernisInfrarot();
-				if (!stehtVorHinderniss) {
-					fahre();
-				}
-			}
-		}
-
+		motor.fahreGerade(2 / KONSTANTE_RAD_UMFANG);
+		motor.drehenAufDerStelle(-90);
+		fahreZuWand();
 	}
 
 	/**
@@ -329,10 +319,22 @@ public class Robot {
 		this.zielGefunden = getLichtInProzent() > SCHWELLWERT_STOP;
 		return zielGefunden;
 	}
+	
+	
+	
+	
 
 	/*
 	 * ##################################### NICHT VERWENDETE METHODEN ######
 	 */
+
+	public boolean isZielGefunden() {
+		return zielGefunden;
+	}
+
+	public void setZielGefunden(boolean zielGefunden) {
+		this.zielGefunden = zielGefunden;
+	}
 
 	/**
 	 * Macht Platz damit der dumme ihn nicht rammt, wird beim solo robo nicht

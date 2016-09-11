@@ -9,7 +9,7 @@ import lejos.robotics.objectdetection.FeatureListener;
 public class InfrarotSensor {
 
 	private HiTechnicEOPD sensor;
-
+ 
 	public InfrarotSensor(String irPortNummer) {
 		Port port = LocalEV3.get().getPort(irPortNummer);
 		this.sensor = new HiTechnicEOPD(port);

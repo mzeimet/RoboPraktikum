@@ -8,7 +8,7 @@ import static project.Config.*;
 public class Lichtsensor {
 
 	private NXTLightSensor sensor;
-
+ 
 	public Lichtsensor(String portNummer) {
 		Port port = LocalEV3.get().getPort(portNummer);
 		this.sensor = new NXTLightSensor(port);

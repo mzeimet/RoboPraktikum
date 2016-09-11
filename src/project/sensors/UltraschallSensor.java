@@ -7,7 +7,7 @@ import lejos.hardware.sensor.EV3UltrasonicSensor;
 
 public class UltraschallSensor {
 
-	private EV3UltrasonicSensor sensor;
+	private EV3UltrasonicSensor sensor; 
 
 	public UltraschallSensor(String usPortNummer) {
 		Port port = LocalEV3.get().getPort(usPortNummer);
